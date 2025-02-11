@@ -1,8 +1,22 @@
 <script setup>
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
 
+onMounted(async () => {
+          try {
+                    const response = await axios.get("/api/siswa");
+                    siswa.value = response.data;
+
+          } catch (error) {
+            console.error(error);
+          } 
+});
+
+const siswa = ref([]);
 </script>
 
 <template>
+        <pre><code>{{ siswa }}</code></pre>
           <div class="bg-gray-900 text-white">
                     <div class="container mx-auto p-4">
                               <div class="flex justify-between items-center mb-6">
