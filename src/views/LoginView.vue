@@ -38,9 +38,9 @@ const login = () => {
                             <option value="KI">Kimia Industri</option>
                             <option value="OI">Otomasi Industri</option>
                             <option value="PPLG">Pembangkitan Perangkat Lunak & Game</option>
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
+                            <option value="TPTU">Tata Pendinginan Udara</option>
+                            <option value="TL">Listrik</option>
+                            <option value="TKR">Kendaraan Ringan</option>
                             <option value=""></option>
                         </select>
                     </div>
