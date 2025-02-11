@@ -16,15 +16,17 @@ const siswa = ref([]);
 </script>
 
 <template>
-          <div class="bg-gray-900 text-white min-h-screen">
+          <div
+                    class="text-white min-h-screen bg-[linear-gradient(to_top_left,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)]">
+
                     <div class="container mx-auto py-[150px]">
                               <div class="flex justify-between items-center mb-6">
                                         <div class="flex items-center">
-                                                  <i class="fas fa-user-circle text-3xl mr-2"></i>
-                                                  <span class="text-lg font-medium text-3xl">Juno Iceclub</span>
+                                                  <img class="h-16 mr-8" src="@/components/images/Logo.png"></img>
+                                                  <span class="text-[45px] font-bold cursor-default">Juno Iceclub</span>
                                         </div>
                                         <div>
-                                                  <i class="fas fa-sign-out-alt text-3xl"></i>
+                                                  <i class="fas fa-sign-out-alt text-3xl cursor-pointer"></i>
                                         </div>
                               </div>
                               <div class="bg-gray-800 p-6 rounded-lg mb-6 shadow-lg">
@@ -91,7 +93,7 @@ const siswa = ref([]);
                               </div>
                               <div class="space-y-4">
                                         <div
-                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-lg px-[70px] py-[40px]">
+                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-xl px-[70px] py-[40px] hover:-translate-y-2 hover:bg-gray-700 transition-all duration-300 ease-out">
                                                   <div>
                                                             <h1 class="text-4xl font-bold">Delphi Zoe</h1>
                                                             <p class="text-gray-400">Computer Science</p>
@@ -103,8 +105,9 @@ const siswa = ref([]);
                                                                       2077</p>
                                                   </div>
                                         </div>
+
                                         <div
-                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-lg px-[70px] py-[40px]">
+                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-xl px-[70px] py-[40px] hover:-translate-y-2 hover:bg-gray-700 transition-all duration-300 ease-out">
                                                   <div>
                                                             <h1 class="text-4xl font-bold">Ryan Tamara</h1>
                                                             <p class="text-gray-400">Industry Automation</p>
@@ -116,8 +119,9 @@ const siswa = ref([]);
                                                                       2077</p>
                                                   </div>
                                         </div>
+
                                         <div
-                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-lg px-[70px] py-[40px]">
+                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-xl px-[70px] py-[40px] hover:-translate-y-2 hover:bg-gray-700 transition-all duration-300 ease-out">
                                                   <div>
                                                             <h1 class="text-4xl font-bold">Dorime Ameno</h1>
                                                             <p class="text-gray-400">Industrial Chemistry</p>
@@ -129,8 +133,9 @@ const siswa = ref([]);
                                                                       2077</p>
                                                   </div>
                                         </div>
+
                                         <div
-                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-lg px-[70px] py-[40px]">
+                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-xl px-[70px] py-[40px] hover:-translate-y-2 hover:bg-gray-700 transition-all duration-300 ease-out">
                                                   <div>
                                                             <h1 class="text-4xl font-bold">Jennifer D. Vulkan</h1>
                                                             <p class="text-gray-400">Chemistry Analyst</p>
@@ -142,8 +147,9 @@ const siswa = ref([]);
                                                                       2077</p>
                                                   </div>
                                         </div>
+
                                         <div
-                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-lg px-[70px] py-[40px]">
+                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-xl px-[70px] py-[40px] hover:-translate-y-2 hover:bg-gray-700 transition-all duration-300 ease-out">
                                                   <div>
                                                             <h1 class="text-4xl font-bold">Ran Dee</h1>
                                                             <p class="text-gray-400">Vehicle Engineering</p>
@@ -156,6 +162,7 @@ const siswa = ref([]);
                                                   </div>
                                         </div>
                               </div>
+
                     </div>
           </div>
 </template>
