@@ -32,6 +32,13 @@ const login = () => {
                         </select>
                     </div>
                     <div class="mb-6 grow">
+                    <label class="block text-gray-400 text-sm font-bold mb-2" for="subdivisi">Subdivisi</label>
+                        <select name="subdivisi" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-800" required>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                        </select>
+                    </div>
+                    <div class="mb-6 grow">
                     <label class="block text-gray-400 text-sm font-bold mb-2" for="major">Major</label>
                         <select name="class" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-800" required>
                             <option value="KA">Kimia Analis</option>
