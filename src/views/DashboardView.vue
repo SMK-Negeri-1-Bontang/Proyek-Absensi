@@ -91,77 +91,92 @@ const siswa = ref([]);
                                                   </div>
                                         </div>
                               </div>
-                              <div class="space-y-4">
+                              <div class="space-y-6">
                                         <div
-                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-xl px-[70px] py-[40px] hover:-translate-y-2 hover:bg-gray-700 transition-all duration-300 ease-out">
+                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700">
                                                   <div>
-                                                            <h1 class="text-4xl font-bold">Delphi Zoe</h1>
-                                                            <p class="text-gray-400">Computer Science</p>
-                                                            <p class="text-gray-500">12492372957295</p>
+                                                            <h1 class="text-4xl font-bold cursor-default">Delphi Zoe
+                                                            </h1>
+                                                            <p class="text-gray-400 cursor-default">Computer Science</p>
+                                                            <p class="text-gray-500 cursor-default">12492372957295</p>
                                                   </div>
                                                   <div class="text-right">
-                                                            <p class="text-green-500 text-6xl font-bold">PRESENT</p>
-                                                            <p class="text-gray-400">06:14:53 | Wednesday, 15 January
-                                                                      2077</p>
+                                                            <p class="text-green-500 text-6xl font-bold cursor-default">
+                                                                      PRESENT</p>
+                                                            <p class="text-gray-400 cursor-default">06:14:53 |
+                                                                      Wednesday, 15 January 2077</p>
                                                   </div>
                                         </div>
 
                                         <div
-                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-xl px-[70px] py-[40px] hover:-translate-y-2 hover:bg-gray-700 transition-all duration-300 ease-out">
+                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700">
                                                   <div>
-                                                            <h1 class="text-4xl font-bold">Ryan Tamara</h1>
-                                                            <p class="text-gray-400">Industry Automation</p>
-                                                            <p class="text-gray-500">12492372957295</p>
+                                                            <h1 class="text-4xl font-bold cursor-default">Ryan Tamara
+                                                            </h1>
+                                                            <p class="text-gray-400 cursor-default">Industry Automation
+                                                            </p>
+                                                            <p class="text-gray-500 cursor-default">12492372957295</p>
                                                   </div>
                                                   <div class="text-right">
-                                                            <p class="text-red-500 text-6xl font-bold">LATE</p>
-                                                            <p class="text-gray-400">06:14:53 | Wednesday, 15 January
-                                                                      2077</p>
+                                                            <p class="text-red-500 text-6xl font-bold cursor-default">
+                                                                      LATE</p>
+                                                            <p class="text-gray-400 cursor-default">06:14:53 |
+                                                                      Wednesday, 15 January 2077</p>
                                                   </div>
                                         </div>
 
                                         <div
-                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-xl px-[70px] py-[40px] hover:-translate-y-2 hover:bg-gray-700 transition-all duration-300 ease-out">
+                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700">
                                                   <div>
-                                                            <h1 class="text-4xl font-bold">Dorime Ameno</h1>
-                                                            <p class="text-gray-400">Industrial Chemistry</p>
-                                                            <p class="text-gray-500">12492372957295</p>
+                                                            <h1 class="text-4xl font-bold cursor-default">Dorime Ameno
+                                                            </h1>
+                                                            <p class="text-gray-400 cursor-default">Industrial Chemistry
+                                                            </p>
+                                                            <p class="text-gray-500 cursor-default">12492372957295</p>
                                                   </div>
                                                   <div class="text-right">
-                                                            <p class="text-white text-6xl font-bold">AWAITING</p>
-                                                            <p class="text-gray-400">06:14:53 | Wednesday, 15 January
-                                                                      2077</p>
+                                                            <p class="text-white text-6xl font-bold cursor-default">
+                                                                      AWAITING</p>
+                                                            <p class="text-gray-400 cursor-default">06:14:53 |
+                                                                      Wednesday, 15 January 2077</p>
                                                   </div>
                                         </div>
 
                                         <div
-                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-xl px-[70px] py-[40px] hover:-translate-y-2 hover:bg-gray-700 transition-all duration-300 ease-out">
+                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700">
                                                   <div>
-                                                            <h1 class="text-4xl font-bold">Jennifer D. Vulkan</h1>
-                                                            <p class="text-gray-400">Chemistry Analyst</p>
-                                                            <p class="text-gray-500">12492372957295</p>
+                                                            <h1 class="text-4xl font-bold cursor-default">Jennifer D.
+                                                                      Vulkan</h1>
+                                                            <p class="text-gray-400 cursor-default">Chemistry Analyst
+                                                            </p>
+                                                            <p class="text-gray-500 cursor-default">12492372957295</p>
                                                   </div>
                                                   <div class="text-right">
-                                                            <p class="text-yellow-500 text-6xl font-bold">PERMISSION</p>
-                                                            <p class="text-gray-400">06:14:53 | Wednesday, 15 January
-                                                                      2077</p>
+                                                            <p
+                                                                      class="text-yellow-500 text-6xl font-bold cursor-default">
+                                                                      PERMISSION</p>
+                                                            <p class="text-gray-400 cursor-default">06:14:53 |
+                                                                      Wednesday, 15 January 2077</p>
                                                   </div>
                                         </div>
 
                                         <div
-                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-xl px-[70px] py-[40px] hover:-translate-y-2 hover:bg-gray-700 transition-all duration-300 ease-out">
+                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700">
                                                   <div>
-                                                            <h1 class="text-4xl font-bold">Ran Dee</h1>
-                                                            <p class="text-gray-400">Vehicle Engineering</p>
-                                                            <p class="text-gray-500">12492372957295</p>
+                                                            <h1 class="text-4xl font-bold cursor-default">Ran Dee</h1>
+                                                            <p class="text-gray-400 cursor-default">Vehicle Engineering
+                                                            </p>
+                                                            <p class="text-gray-500 cursor-default">12492372957295</p>
                                                   </div>
                                                   <div class="text-right">
-                                                            <p class="text-green-500 text-6xl font-bold">ALFA</p>
-                                                            <p class="text-gray-400">06:14:53 | Wednesday, 15 January
-                                                                      2077</p>
+                                                            <p class="text-gray-500 text-6xl font-bold cursor-default">
+                                                                      ALPHA</p>
+                                                            <p class="text-gray-400 cursor-default">06:14:53 |
+                                                                      Wednesday, 15 January 2077</p>
                                                   </div>
                                         </div>
                               </div>
+
 
                     </div>
           </div>
