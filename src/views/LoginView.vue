@@ -9,7 +9,7 @@ const login = () => {
 </script>
 
 <template>
-    <div class="flex items-center justify-center h-screen bg-gray-900">
+    <div class="flex items-center justify-center h-screen bg-[image:url('/src/components/images/kde_mountain.png')] bg-cover">
         <div class="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
             <h1 class="text-2xl font-bold text-center mb-6 text-white">Selamat datang di laman Login</h1>
             <form @submit.prevent="login">
