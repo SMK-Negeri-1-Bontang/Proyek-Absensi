@@ -98,7 +98,7 @@ const siswa = ref([]);
                                                             <p class="text-gray-500">12492372957295</p>
                                                   </div>
                                                   <div class="text-right">
-                                                            <p class="text-green-500 text-6xl font-bold">PRESENT</p>
+                                                            <p class="text-green-400 text-6xl font-bold">PRESENT</p>
                                                             <p class="text-gray-400">06:14:53 | Wednesday, 15 January
                                                                       2077</p>
                                                   </div>
