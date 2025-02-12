@@ -11,7 +11,8 @@ const login = () => {
 <template>
     <div class="flex items-center justify-center h-screen bg-[image:url('/src/components/images/kde_mountain.png')] bg-cover">
         <div class="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
-            <h1 class="text-2xl font-bold text-center mb-6 text-white">Selamat datang di laman Login</h1>
+            <img src="/src/components/images/Logo.png" alt="logo" class="h-16 mx-auto"> <!-- mx-auto mungkin merusakkan sesuatu-->
+            <h1 class="text-2xl font-bold text-center mb-6 text-white">Login</h1>
             <form @submit.prevent="login">
                 <div class="mb-4">
                     <label class="block text-gray-400 text-sm font-bold mb-2" for="name">Nama</label>
