@@ -48,7 +48,9 @@ const login = () => {
                             <option value="TPTU">Tata Pendinginan Udara</option>
                             <option value="TL">Listrik</option>
                             <option value="TKR">Kendaraan Ringan</option>
-                            <option value=""></option>
+                            <option value="LAS">Pengelasan</option>
+                            <option value="FAR">Farmasi</option>
+                            <option value="MES">Mesin</option>
                         </select>
                     </div>
                 </div>
