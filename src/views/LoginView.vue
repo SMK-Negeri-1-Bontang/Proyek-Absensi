@@ -20,7 +20,7 @@ const login = () => {
                 <div class="mb-6">
                     <label class="block text-gray-400 text-sm font-bold mb-2" for="password">Password</label>
                     <input  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100" type="password" placeholder="Masukkan Password" required>
-                </div>
+                </div class="select-none">
                 <div class="flex flex-row gap-2">
                     <div class="mb-6 grow">
                     <label class="block text-gray-400 text-sm font-bold mb-2" for="class">Class</label>
@@ -48,7 +48,9 @@ const login = () => {
                             <option value="TPTU">Tata Pendinginan Udara</option>
                             <option value="TL">Listrik</option>
                             <option value="TKR">Kendaraan Ringan</option>
-                            <option value=""></option>
+                            <option value="LAS">Pengelasan</option>
+                            <option value="FAR">Farmasi</option>
+                            <option value="MES">Mesin</option>
                         </select>
                     </div>
                 </div>
