@@ -16,14 +16,13 @@ const siswa = ref([]);
 </script>
 
 <template>
-          <div
-                    class="text-white min-h-screen bg-[linear-gradient(to_top_left,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)]">
+          <div class="text-white min-h-screen bg-[linear-gradient(to_top_left,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)]">
 
                     <div class="container mx-auto py-[150px]">
                               <div class="flex justify-between items-center mb-6">
                                         <div class="flex items-center">
                                                   <img class="h-16 mr-8" src="@/components/images/Logo.png"></img>
-                                                  <span class="text-[45px] font-bold cursor-default">Juno Iceclub</span>
+                                                  <h1 class="text-[45px] font-bold cursor-default paytone-one-regular">Juno Iceclub</h1>
                                         </div>
                                         <div>
                                                   <i class="fas fa-sign-out-alt text-3xl cursor-pointer"></i>
@@ -35,26 +34,26 @@ const siswa = ref([]);
                                                             <label for="nis"
                                                                       class="block mb-2 font-medium text-xl">NIS:</label>
                                                             <input type="text" id="nis" placeholder="Type NIS"
-                                                                      class="input input-bordered input-primary w-full max-w-xs bg-gray-800" />
+                                                                      class="input input-bordered input-primary w-full max-w-xs border-4 bg-gray-800" />
                                                   </div>
                                                   <div>
                                                             <label for="class"
                                                                       class="block mb-2 font-medium text-xl">Class:</label>
                                                             <div class="flex items-center space-x-4">
                                                                       <input type="radio" name="class" id="class-x"
-                                                                                class="radio radio-primary" checked />
+                                                                                class="radio radio-primary border-4" checked />
                                                                       <label for="class-x">X</label>
 
                                                                       <input type="radio" name="class" id="class-xi"
-                                                                                class="radio radio-primary" />
+                                                                                class="radio radio-primary border-4" />
                                                                       <label for="class-xi">XI</label>
 
                                                                       <input type="radio" name="class" id="class-xii"
-                                                                                class="radio radio-primary" />
+                                                                                class="radio radio-primary border-4" />
                                                                       <label for="class-xii">XII</label>
 
                                                                       <input type="radio" name="class" id="class-xiii"
-                                                                                class="radio radio-primary" />
+                                                                                class="radio radio-primary border-4" />
                                                                       <label for="class-xiii">XIII</label>
                                                             </div>
                                                   </div>
@@ -63,7 +62,7 @@ const siswa = ref([]);
                                                             <label for="jurusan"
                                                                       class="block mb-2 font-medium text-xl">Jurusan:</label>
                                                             <select id="jurusan"
-                                                                      class="select select-primary w-full max-w-xs bg-gray-800 mb-2">
+                                                                      class="select select-primary w-full max-w-xs bg-gray-800 mb-2 border-4">
                                                                       <option disabled selected>What is the best TV
                                                                                 show?</option>
                                                                       <option>Game of Thrones</option>
@@ -73,11 +72,11 @@ const siswa = ref([]);
                                                             </select>
                                                             <div class="flex items-center space-x-2 mt-2">
                                                                       <input type="radio" id="jurusan-a" name="jurusan"
-                                                                                class="radio radio-primary" />
+                                                                                class="radio radio-primary border-4" />
                                                                       <label for="jurusan-a">A</label>
 
                                                                       <input type="radio" id="jurusan-b" name="jurusan"
-                                                                                class="radio radio-primary" />
+                                                                                class="radio radio-primary border-4" />
                                                                       <label for="jurusan-b">B</label>
                                                             </div>
 
@@ -86,7 +85,7 @@ const siswa = ref([]);
                                                             <label for="tanggal"
                                                                       class="block mb-2 font-medium text-xl">Tanggal:</label>
                                                             <input type="date" id="tanggal"
-                                                                      class="input input-bordered w-full max-w-xs bg-gray-800 border-2 border-primary focus:ring focus:ring-primary focus:border-primary" />
+                                                                      class="input input-bordered w-full max-w-xs bg-gray-800 border-2 border-primary focus:ring focus:ring-primary focus:border-primary border-4" />
 
                                                   </div>
                                         </div>
@@ -101,8 +100,8 @@ const siswa = ref([]);
                                                             <p class="text-gray-500 cursor-default">12492372957295</p>
                                                   </div>
                                                   <div class="text-right">
-                                                            <p class="text-green-500 text-6xl font-bold cursor-default">
-                                                                      PRESENT</p>
+                                                            <h1 class=" text-[#00FF7F] text-6xl font-bold cursor-default">
+                                                                      PRESENT</h1>
                                                             <p class="text-gray-400 cursor-default">06:14:53 |
                                                                       Wednesday, 15 January 2077</p>
                                                   </div>
@@ -118,8 +117,8 @@ const siswa = ref([]);
                                                             <p class="text-gray-500 cursor-default">12492372957295</p>
                                                   </div>
                                                   <div class="text-right">
-                                                            <p class="text-red-500 text-6xl font-bold cursor-default">
-                                                                      LATE</p>
+                                                            <h1 class="text-[#FF1A1A] text-6xl font-bold cursor-default">
+                                                                      LATE</h1>
                                                             <p class="text-gray-400 cursor-default">06:14:53 |
                                                                       Wednesday, 15 January 2077</p>
                                                   </div>
@@ -135,8 +134,8 @@ const siswa = ref([]);
                                                             <p class="text-gray-500 cursor-default">12492372957295</p>
                                                   </div>
                                                   <div class="text-right">
-                                                            <p class="text-white text-6xl font-bold cursor-default">
-                                                                      AWAITING</p>
+                                                            <h1 class="text-white text-6xl font-bold cursor-default">
+                                                                      AWAITING</h1>
                                                             <p class="text-gray-400 cursor-default">06:14:53 |
                                                                       Wednesday, 15 January 2077</p>
                                                   </div>
@@ -152,9 +151,9 @@ const siswa = ref([]);
                                                             <p class="text-gray-500 cursor-default">12492372957295</p>
                                                   </div>
                                                   <div class="text-right">
-                                                            <p
-                                                                      class="text-yellow-500 text-6xl font-bold cursor-default">
-                                                                      PERMISSION</p>
+                                                            <h1
+                                                                      class="text-[#FFD700] text-6xl font-bold cursor-default">
+                                                                      PERMISSION</h1>
                                                             <p class="text-gray-400 cursor-default">06:14:53 |
                                                                       Wednesday, 15 January 2077</p>
                                                   </div>
@@ -169,8 +168,8 @@ const siswa = ref([]);
                                                             <p class="text-gray-500 cursor-default">12492372957295</p>
                                                   </div>
                                                   <div class="text-right">
-                                                            <p class="text-gray-500 text-6xl font-bold cursor-default">
-                                                                      ALPHA</p>
+                                                            <h1 class="text-gray-500 text-6xl font-bold cursor-default">
+                                                                      ALPHA</h1>
                                                             <p class="text-gray-400 cursor-default">06:14:53 |
                                                                       Wednesday, 15 January 2077</p>
                                                   </div>
