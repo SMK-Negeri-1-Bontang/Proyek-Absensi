@@ -17,7 +17,6 @@ const siswa = ref([]);
 
 <template>
           <div class="text-white min-h-screen bg-[linear-gradient(to_top_left,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)]">
-
                     <div class="container mx-auto py-[150px]">
                               <div class="flex justify-between items-center mb-6">
                                         <div class="flex items-center">
