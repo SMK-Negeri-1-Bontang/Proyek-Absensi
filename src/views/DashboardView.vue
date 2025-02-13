@@ -57,7 +57,7 @@ const siswa = ref([]);
                                                                       src="@/components/images/Logo.png"></img>
                                                             <h1
                                                                       class="text-[45px] font-bold cursor-default paytone-one-regular">
-                                                                      Juno Iceclub</h1>
+                                                                      Pak Wahyu</h1>
                                                   </div>
                                                   <div>
                                                             <i class="fas fa-sign-out-alt text-3xl cursor-pointer"></i>
