@@ -1,5 +1,6 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
+import axios from 'axios';
 
 const form = reactive({
     nama: '',
@@ -9,6 +10,28 @@ const form = reactive({
 const login = () => {
     console.log(form.nama + form.password)
 };
+
+const siswa = ref([]);
+const guru = ref([]);
+
+onMounted(async () => {
+          try {
+                    const response = await axios.get("/api/siswa");
+                    siswa.value = response.data;
+
+          } catch (error) {
+                    console.error(error);
+          }
+
+          try {
+                    const response = await axios.get("/api/guru");
+                    guru.value = response.data;
+
+          } catch (error) {
+                    console.error(error);
+          }
+});
+
 </script>
 
 <template>
@@ -16,8 +39,6 @@ const login = () => {
         <div class="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
             <img src="/src/components/images/Logo.png" alt="logo" class="h-16 mx-auto"> <!-- mx-auto mungkin merusakkan sesuatu-->
             <h1 class="text-2xl font-bold text-center mb-6 text-white">Login</h1>
-
-
 
             <form @submit.prevent="login">
                 <div class="mb-4">
@@ -30,8 +51,6 @@ const login = () => {
                 </div>
                 <button class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg" type="submit">Masuk</button>
             </form>
-
-
 
         </div>
     </div>
