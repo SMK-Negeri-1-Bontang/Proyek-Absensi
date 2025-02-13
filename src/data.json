@@ -1,63 +1,94 @@
 {
-          "jurusan": [
-                    {
-                              "id": 1,
-                              "nama": "Pengembangan Perangkat Lunak dan Gim"
-                    },
-                    {
-                              "id": 2,
-                              "nama": "Teknir Kendaraan Ringan"
-                    }
-          ],
-
-          "siswa": [
-                    {
-                              "id": 1,
-                              "nama": "Valen Pratama Sahedi",
-                              "kelas": 2,
-                              "absen": 36,
-                              "subdivisi_jurusan": "tidak ada",
-                              "id_jurusan": 1,
-                              "password": "12345"
-                    },
-                    {
-                              "id": 2,
-                              "nama": "Tristan Argyadeva Ravindra Maulany",
-                              "kelas": 2,
-                              "absen": 35,
-                              "subdivisi_jurusan": "tidak ada",
-                              "id_jurusan": 1,
-                              "password": "12345"
-                    }
-          ],
-
-          "absensi": [
-                    {
-                              "id": 1,
-                              "keterangan": "telat",
-                              "tanggal": "10/02/2025",
-                              "waktu": "00:00:00",
-                              "id_siswa": 1
-                    },
-                    {
-                              "id": 1,
-                              "keterangan": "tepat waktu",
-                              "tanggal": "10/02/2025",
-                              "waktu": "00:00:00",
-                              "id_siswa": 2
-                    }
-          ],
-
-          "guru": [
-                    {
-                              "id": 1,
-                              "nama": "Pak Wahyu",
-                              "password": "Xj2!zQ9v#LmP@wT"
-                    },
-                    {
-                              "id": 2,
-                              "nama": "Bu Damaris",
-                              "password": "gH8%yB#tM4$RqNv"
-                    }
-          ]
+  "jurusan": [
+    {
+      "id": 1,
+      "nama": "Kimia Analis"
+    },
+    {
+      "id": 2,
+      "nama": "Kimia Industri"
+    },
+    {
+      "id": 3,
+      "nama": "Otomasi Industri"
+    },
+    {
+      "id": 4,
+      "nama": "Pengembangan Perangkat Lunak dan Gim"
+    },
+    {
+      "id": 5,
+      "nama": "Tata Pendinginan Udara"
+    },
+    {
+      "id": 6,
+      "nama": "Teknik Listrik"
+    },
+    {
+      "id": 7,
+      "nama": "Teknik Kendaraan Ringan"
+    },
+    {
+      "id": 8,
+      "nama": "Teknik Pengelasan"
+    },
+    {
+      "id": 9,
+      "nama": "Farmasi"
+    },
+    {
+      "id": 10,
+      "nama": "Teknik Mesin"
+    }
+  ],
+  "siswa": [
+    {
+      "id": 1,
+      "nama": "Valen Pratama Sahedi",
+      "nis": "230501035",
+      "kelas": 2,
+      "absen": 36,
+      "subdivisi_jurusan": "tidak ada",
+      "id_jurusan": 4,
+      "password": "12345"
+    },
+    {
+      "id": 2,
+      "nama": "Tristan Argyadeva Ravindra Maulany",
+      "nis": "230501034",
+      "kelas": 2,
+      "absen": 35,
+      "subdivisi_jurusan": "tidak ada",
+      "id_jurusan": 4,
+      "password": "12345"
+    }
+  ],
+  "absensi": [
+    {
+      "id": 1,
+      "keterangan": "telat",
+      "tanggal": "10/02/2025",
+      "waktu": "00:00:00",
+      "id_siswa": 1
+    },
+    {
+      "id": 1,
+      "keterangan": "tepat waktu",
+      "tanggal": "10/02/2025",
+      "waktu": "00:00:00",
+      "id_siswa": 2
+    }
+  ],
+  "guru": [
+    {
+      "id": 1,
+      "nama": "Pak Wahyu",
+      "password": "Xj2!zQ9v#LmP@wT"
+    },
+    {
+      "id": 2,
+      "nama": "Bu Damaris",
+      "password": "gH8%yB#tM4$RqNv"
+    }
+  ]
 }
