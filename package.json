@@ -10,7 +10,7 @@
                 "server": "json-server --watch src/data.json --port 5000"
         },
         "dependencies": {
-                "@tailwindcss/vite": "^4.0.5",
+                "@tailwindcss/vite": "^4.0.6",
                 "absensi": "file:",
                 "axios": "^1.7.9",
                 "json-server": "^1.0.0-beta.3",
@@ -22,7 +22,7 @@
                 "@tailwindcss/postcss": "^4.0.6",
                 "@vitejs/plugin-vue": "^5.2.1",
                 "autoprefixer": "^10.4.20",
-                "daisyui": "^4.12.23",
+                "daisyui": "^5.0.0-beta.8",
                 "postcss": "^8.5.2",
                 "tailwindcss": "^4.0.6",
                 "vite": "^6.1.0",
