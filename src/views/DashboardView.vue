@@ -31,7 +31,7 @@ const filter = reactive({
 watch(
           () => filter.jurusan,
           (newVal) => {
-                    if ( (newVal !== "KI" || newVal !== "KA") && filter.subdivisi !== '' ) {
+                    if ((newVal !== "KI" || newVal !== "KA") && filter.subdivisi !== '') {
                               filter.subdivisi = '';
                     }
           }
@@ -49,17 +49,20 @@ const siswa = ref([]);
           <div
                     class="text-white min-h-screen bg-[linear-gradient(to_top_left,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)]">
                     <div class="container mx-auto py-[150px]">
-                              <div class="flex justify-between items-center mb-6">
-                                        <div class="flex items-center">
-                                                  <img class="h-16 mr-8" src="@/components/images/Logo.png"></img>
-                                                  <h1 class="text-[45px] font-bold cursor-default paytone-one-regular">
-                                                            Juno Iceclub</h1>
-                                        </div>
-                                        <div>
-                                                  <i class="fas fa-sign-out-alt text-3xl cursor-pointer"></i>
-                                        </div>
-                              </div>
+
                               <div class="bg-gray-800 p-6 rounded-lg mb-6 shadow-lg">
+                                        <div class="flex justify-between items-center m-6">
+                                                  <div class="flex items-center">
+                                                            <img class="h-16 mr-8"
+                                                                      src="@/components/images/Logo.png"></img>
+                                                            <h1
+                                                                      class="text-[45px] font-bold cursor-default paytone-one-regular">
+                                                                      Juno Iceclub</h1>
+                                                  </div>
+                                                  <div>
+                                                            <i class="fas fa-sign-out-alt text-3xl cursor-pointer"></i>
+                                                  </div>
+                                        </div>
                                         <div class="grid grid-cols-4 gap-6 mt-2 px-[50px] pt-[20px] pb-[24px]">
                                                   <div>
                                                             <label for="nis"
