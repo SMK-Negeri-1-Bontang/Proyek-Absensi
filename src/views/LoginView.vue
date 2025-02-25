@@ -1,11 +1,13 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, useCookies } from 'vue';
 import axios from 'axios';
 
 const form = reactive({
     nama: '',
     password: ''
 })
+
+const { cookies } = useCookies();
 
 const login = () => {
     console.log(form.nama + form.password)
