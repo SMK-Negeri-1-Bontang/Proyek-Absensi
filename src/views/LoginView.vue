@@ -1,11 +1,17 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
+import VueCookies from 'vue-cookies';
 import axios from 'axios';
 
 const form = reactive({
     nama: '',
     password: ''
 })
+
+const setCookie = () => {
+    cookies.set('cookieLogin', form.nama);
+
+};
 
 const login = () => {
     console.log(form.nama + form.password)
@@ -49,7 +55,7 @@ onMounted(async () => {
                     <label class="block text-gray-400 text-sm font-bold mb-2" for="password">Kata Sandi</label>
                     <input  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100" type="password" id="password" name="password" placeholder="Masukkan kata sandi" v-model="form.password" required>
                 </div>
-                <button class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg" type="submit">Masuk</button>
+                <button class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg" type="submit" onclick="setCookie()">Masuk</button>
             </form>
 
         </div>
