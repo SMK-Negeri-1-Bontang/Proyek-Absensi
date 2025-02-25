@@ -1,12 +1,27 @@
 <script setup>
 import axios from 'axios';
-import { onMounted, ref, reactive, watch } from 'vue';
+import { onMounted, ref, reactive, watch, computed } from 'vue';
 
 onMounted(async () => {
+          const today = new Date().toISOString().split("T")[0];
+
           try {
                     const response = await axios.get("/api/siswa");
-                    siswa.value = response.data;
+                    data.siswa = response.data;
+          } catch (error) {
+                    console.error(error);
+          }
 
+          try {
+                    const response = await axios.get("/api/jurusan");
+                    data.jurusan = response.data;
+          } catch (error) {
+                    console.error(error);
+          }
+
+          try {
+                    const response = await axios.get(`/api/absensi?tanggal=${today}`);
+                    data.absensi = response.data;
           } catch (error) {
                     console.error(error);
           }
@@ -37,12 +52,37 @@ watch(
           }
 );
 
+watch(
+          filter,
+          async (newVal) => {
+                    if (filter.tanggal !== '') {
+                              data.absensi = await fetchAbsensi(`?tanggal=${filter.tanggal}`);
+                    }
+          }
+);
+
+async function fetchAbsensi(condition) {
+          try {
+                    console.log(`Fetching: /api/absensi${condition}`);
+                    const response = await axios.get(`/api/absensi${condition}`);
+                    console.log("API Response:", response.data);  // 👀 Debugging output
+                    return response.data;
+          } catch (error) {
+                    console.error(error);
+          }
+}
 
 const testing = () => {
           console.log(filter);
 }
 
-const siswa = ref([]);
+const data = reactive({
+          "siswa": [],
+          "absensi": [],
+          "jurusan": []
+});
+
+console.log(data);
 </script>
 
 <template>
@@ -227,6 +267,44 @@ const siswa = ref([]);
                                                                       Wednesday, 15 January 2077</p>
                                                   </div>
                                         </div>
+
+
+                              </div>
+
+                              <div class="space-y-6" v-for="absensi in data.absensi" :key="data.absensi.id">
+
+                                        <div
+                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700">
+                                                  <div>
+                                                            <h1 class="text-4xl font-bold cursor-default">
+                                                                      {{ data.siswa.find(s => s.id === absensi.id_siswa
+                                                                      ).nama || "Loading..." }}
+                                                            </h1>
+                                                            <p class="text-gray-400 cursor-default">
+                                                                      {{ data.jurusan.find(j => j.id ===
+                                                                                data.siswa.find(s => s.id ===
+                                                                                          absensi.id_siswa).id_jurusan).nama || "Loading..."
+                                                                      }}
+                                                            </p>
+                                                            <p class="text-gray-500 cursor-default">
+                                                                      {{ data.siswa.find(s => s.id ===
+                                                                                absensi.id_siswa).nis || "Loading..." }}
+                                                            </p>
+
+
+
+                                                  </div>
+                                                  <div class="text-right">
+                                                            <h1
+                                                                      :class="`${statusColors[absensi.keterangan]} text-6xl font-bold cursor-default`">
+                                                                      {{ absensi.keterangan.toUpperCase() ||
+                                                                                "Loading..." }}</h1>
+                                                            <p class="text-gray-400 cursor-default">{{
+                                                                      absensi.waktu || "Loading..." }} || {{
+                                                                                absensi.tanggal || "Loading..." }}</p>
+                                                  </div>
+                                        </div>
+
                               </div>
 
 

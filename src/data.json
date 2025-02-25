@@ -66,15 +66,22 @@
   "absensi": [
     {
       "id": 1,
-      "keterangan": "telat",
-      "tanggal": "10/02/2025",
+      "keterangan": "terlambat",
+      "tanggal": "2025-02-10",
       "waktu": "00:00:00",
       "id_siswa": 1
     },
     {
-      "id": 1,
-      "keterangan": "tepat waktu",
-      "tanggal": "10/02/2025",
+      "id": 2,
+      "keterangan": "hadir",
+      "tanggal": "2025-02-13",
+      "waktu": "00:00:00",
+      "id_siswa": 2
+    },
+    {
+      "id": 3,
+      "keterangan": "hadir",
+      "tanggal": "2025-02-25",
       "waktu": "00:00:00",
       "id_siswa": 2
     }
