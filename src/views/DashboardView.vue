@@ -87,7 +87,7 @@ watch(
                               const filteredSiswa = data.siswa.filter(siswa =>
                                         siswa.nama.toLowerCase().includes(filter.search.toLowerCase()) ||
                                         siswa.nis.includes(filter.search) ||
-                                        data.jurusan.find(jurusan => jurusan.id === Number(siswa.id_jurusan)).nama.toLowerCase().includes(filter.search.toLowerCase())
+                                        data.jurusan.find(jurusan => Number(jurusan.id) === Number(siswa.id_jurusan)).nama.toLowerCase().includes(filter.search.toLowerCase())
                               );
 
                               const idSiswa = filteredSiswa.map(siswa => Number(siswa.id));
@@ -149,7 +149,7 @@ console.log(data);
 
                                                   <div>
                                                             <label for="search"
-                                                                      class="block mb-2 font-medium text-xl">Search</label>
+                                                                      class="block mb-2 font-medium text-xl">Search:</label>
                                                             <input type="text" id="search" placeholder="Type here"
                                                                       name="search" v-model="filter.search"
                                                                       class="input input-bordered input-primary w-full max-w-xs border-4 bg-gray-800" />
