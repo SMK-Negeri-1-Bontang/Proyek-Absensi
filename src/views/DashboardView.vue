@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { onMounted, ref, reactive, watch, computed } from 'vue';
+import { onMounted, reactive, watch } from 'vue';
 
 onMounted(async () => {
           const today = new Date().toISOString().split("T")[0];
@@ -30,23 +30,24 @@ onMounted(async () => {
 const statusColors = reactive({
           hadir: "text-[#00FF7F]",
           terlambat: "text-[#FF1A1A]",
-          menunggu: "text-gray-400",
+          menunggu: "text-white",
           izin: "text-[#FFD700]",
-          alpha: "text-gray-500"
+          alpha: "text-[#FF1A1A]"
 });
 
 const filter = reactive({
-          nis: '',
-          kelas: '',
-          jurusan: '',
+          search: '',
+          kelas: [1, 2, 3, 4],
+          jurusan: 0,
           subdivisi: '',
-          tanggal: ''
+          keterangan: '',
+          tanggal: new Date().toISOString().split("T")[0]
 });
 
 watch(
           () => filter.jurusan,
           (newVal) => {
-                    if ((newVal !== "KI" || newVal !== "KA") && filter.subdivisi !== '') {
+                    if ((newVal !== 1 || newVal !== 2) && filter.subdivisi !== '') {
                               filter.subdivisi = '';
                     }
           }
@@ -55,9 +56,44 @@ watch(
 watch(
           filter,
           async (newVal) => {
+
                     if (filter.tanggal !== '') {
                               data.absensi = await fetchAbsensi(`?tanggal=${filter.tanggal}`);
                     }
+
+                    if ( filter.keterangan ) {
+                              data.absensi = data.absensi.filter( absensi => absensi.keterangan.toLowerCase() == filter.keterangan.toLowerCase() );
+                    }
+
+                    if (filter.jurusan) {
+                              const filteredSiswa = data.siswa.filter(siswa => siswa.id_jurusan == filter.jurusan);
+                              const idSiswa = filteredSiswa.map(siswa => Number(siswa.id));
+                              data.absensi = data.absensi.filter(absensi => idSiswa.includes(absensi.id_siswa));
+                    }
+
+                    if (filter.subdivisi && [1, 2].includes(filter.jurusan)) {
+                              const filteredSiswa = data.siswa.filter(siswa => siswa.subdivisi_jurusan === filter.subdivisi);
+                              const idSiswa = filteredSiswa.map(siswa => Number(siswa.id));
+                              data.absensi = data.absensi.filter(absensi => idSiswa.includes(absensi.id_siswa));
+                    }
+
+                    if (filter.kelas) {
+                              const filteredSiswa = data.siswa.filter(siswa => filter.kelas.includes(siswa.kelas));
+                              const idSiswa = filteredSiswa.map(siswa => Number(siswa.id));
+                              data.absensi = data.absensi.filter(absensi => idSiswa.includes(absensi.id_siswa));
+                    }
+
+                    if (filter.search.trim()) {
+                              const filteredSiswa = data.siswa.filter(siswa =>
+                                        siswa.nama.toLowerCase().includes(filter.search.toLowerCase()) ||
+                                        siswa.nis.includes(filter.search) ||
+                                        data.jurusan.find(jurusan => jurusan.id === Number(siswa.id_jurusan)).nama.toLowerCase().includes(filter.search.toLowerCase())
+                              );
+
+                              const idSiswa = filteredSiswa.map(siswa => Number(siswa.id));
+                              data.absensi = data.absensi.filter(absensi => idSiswa.includes(absensi.id_siswa));
+                    }
+
           }
 );
 
@@ -72,8 +108,14 @@ async function fetchAbsensi(condition) {
           }
 }
 
-const testing = () => {
-          console.log(filter);
+function formatDate(dateString) {
+          const date = new Date(dateString);
+          return new Intl.DateTimeFormat("en-GB", {
+                    weekday: "long",
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric"
+          }).format(date);
 }
 
 const data = reactive({
@@ -103,59 +145,55 @@ console.log(data);
                                                             <i class="fas fa-sign-out-alt text-3xl cursor-pointer"></i>
                                                   </div>
                                         </div>
-                                        <div class="grid grid-cols-4 gap-6 mt-2 px-[50px] pt-[20px] pb-[24px]">
+                                        <div class="grid grid-cols-5 gap-6 mt-2 px-[50px] pt-[20px] pb-[24px]">
+
                                                   <div>
-                                                            <label for="nis"
-                                                                      class="block mb-2 font-medium text-xl">NIS:</label>
-                                                            <input type="text" id="nis" placeholder="Type NIS"
-                                                                      name="nis" v-model="filter.nis"
+                                                            <label for="search"
+                                                                      class="block mb-2 font-medium text-xl">Search</label>
+                                                            <input type="text" id="search" placeholder="Type here"
+                                                                      name="search" v-model="filter.search"
                                                                       class="input input-bordered input-primary w-full max-w-xs border-4 bg-gray-800" />
                                                   </div>
+
                                                   <div>
-                                                            <label for="class"
-                                                                      class="block mb-2 font-medium text-xl">Kelas:</label>
-                                                            <div class="flex items-center space-x-4">
-                                                                      <input type="radio" v-model="filter.kelas"
-                                                                                :value="1" id="class-x"
-                                                                                class="radio radio-primary border-4" />
-                                                                      <label for="class-x">X</label>
-
-                                                                      <input type="radio" v-model="filter.kelas"
-                                                                                :value="2" id="class-xi"
-                                                                                class="radio radio-primary border-4" />
-                                                                      <label for="class-xi">XI</label>
-
-                                                                      <input type="radio" v-model="filter.kelas"
-                                                                                :value="3" id="class-xii"
-                                                                                class="radio radio-primary border-4" />
-                                                                      <label for="class-xii">XII</label>
-
-                                                                      <input type="radio" v-model="filter.kelas"
-                                                                                :value="4" id="class-xiii"
-                                                                                class="radio radio-primary border-4" />
-                                                                      <label for="class-xiii">XIII</label>
+                                                            <label class="block mb-2 font-medium text-xl">Kelas:</label>
+                                                            <div class="flex flex-wrap gap-4">
+                                                                      <div class="form-control"
+                                                                                v-for="n in [1, 2, 3, 4]" :key="n">
+                                                                                <label class="label cursor-pointer">
+                                                                                          <span class="label-text">{{
+                                                                                                    ['X', 'XI', 'XII',
+                                                                                                              'XIII'][n - 1]
+                                                                                          }}</span>
+                                                                                          <input type="checkbox"
+                                                                                                    v-model="filter.kelas"
+                                                                                                    :value="n"
+                                                                                                    class="checkbox checkbox-primary" />
+                                                                                </label>
+                                                                      </div>
                                                             </div>
                                                   </div>
+
 
                                                   <div>
                                                             <label for="jurusan"
                                                                       class="block mb-2 font-medium text-xl">Jurusan:</label>
                                                             <select id="jurusan" v-model="filter.jurusan"
                                                                       class="select select-primary w-full max-w-xs bg-gray-800 mb-2 border-4">
-                                                                      <option value="KA">Kimia Analis</option>
-                                                                      <option value="KI">Kimia Industri</option>
-                                                                      <option value="OI">Otomasi Industri</option>
-                                                                      <option value="PPLG">Pembangkitan Perangkat Lunak
-                                                                                & Game</option>
-                                                                      <option value="TPTU">Tata Pendinginan Udara
-                                                                      </option>
-                                                                      <option value="TL">Listrik</option>
-                                                                      <option value="TKR">Kendaraan Ringan</option>
-                                                                      <option value="LAS">Pengelasan</option>
-                                                                      <option value="FAR">Farmasi</option>
-                                                                      <option value="MES">Mesin</option>
+                                                                      <option :value="1">Kimia Analis</option>
+                                                                      <option :value="2">Kimia Industri</option>
+                                                                      <option :value="3">Otomasi Industri</option>
+                                                                      <option :value="4">Pengembangan Perangkat Lunak &
+                                                                                Gim</option>
+                                                                      <option :value="5">Tata Pendinginan Udara</option>
+                                                                      <option :value="6">Listrik</option>
+                                                                      <option :value="7">Kendaraan Ringan</option>
+                                                                      <option :value="8">Pengelasan</option>
+                                                                      <option :value="9">Farmasi</option>
+                                                                      <option :value="10">Mesin</option>
+                                                                      <option :value="0">All</option>
                                                             </select>
-                                                            <div v-if="filter.jurusan === 'KA' || filter.jurusan === 'KI'"
+                                                            <div v-if="filter.jurusan === 1 || filter.jurusan === 2"
                                                                       class="flex items-center space-x-2 mt-2">
                                                                       <input type="radio" id="jurusan-a" name="jurusan"
                                                                                 class="radio radio-primary border-4"
@@ -169,17 +207,32 @@ console.log(data);
                                                             </div>
 
                                                   </div>
+
+                                                  <div>
+                                                            <label for="keterangan"
+                                                                      class="block mb-2 font-medium text-xl">Keterangan:</label>
+                                                            <select id="keterangan" v-model="filter.keterangan"
+                                                                      class="select select-primary w-full max-w-xs bg-gray-800 mb-2 border-4">
+                                                                      <option value="hadir">Hadir</option>
+                                                                      <option value="terlambat">Terlambat</option>
+                                                                      <option value="izin">Izin</option>
+                                                                      <option value="alpha">Alpha</option>
+                                                                      <option value="menunggu">Menunggu</option>
+                                                                      <option value="">All</option>
+                                                            </select>
+                                                  </div>
+
                                                   <div>
                                                             <label for="tanggal"
                                                                       class="block mb-2 font-medium text-xl">Tanggal:</label>
                                                             <input type="date" id="tanggal" v-model="filter.tanggal"
-                                                                      class="input input-bordered w-full max-w-xs bg-gray-800 border-2 border-primary focus:ring focus:ring-primary focus:border-primary border-4" />
+                                                                      class="input input-bordered w-full max-w-xs bg-gray-800 border-primary focus:ring focus:ring-primary focus:border-primary border-4" />
                                                   </div>
                                         </div>
 
-                                        <button @click="testing">click me to view filters</button>
                               </div>
-                              <div class="space-y-6">
+
+                              <div class="space-y-6 hidden">
                                         <div
                                                   class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700">
                                                   <div>
@@ -273,42 +326,42 @@ console.log(data);
 
                               <div class="space-y-6" v-for="absensi in data.absensi" :key="data.absensi.id">
 
-                                        <div
+                                        <div v-if="data && data.siswa && data.jurusan && absensi"
                                                   class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700">
                                                   <div>
                                                             <h1 class="text-4xl font-bold cursor-default">
-                                                                      {{ data.siswa.find(s => s.id === absensi.id_siswa
-                                                                      ).nama || "Loading..." }}
+                                                                      {{data.siswa.find(s => s.id ==
+                                                                                absensi.id_siswa).nama || "Loading..."}}
                                                             </h1>
                                                             <p class="text-gray-400 cursor-default">
-                                                                      {{ data.jurusan.find(j => j.id ===
-                                                                                data.siswa.find(s => s.id ===
-                                                                                          absensi.id_siswa).id_jurusan).nama || "Loading..."
-                                                                      }}
+                                                                      {{data.jurusan.find(j => j.id ==
+                                                                                data.siswa.find(s => s.id ==
+                                                                                          absensi.id_siswa)?.id_jurusan)?.nama ||
+                                                                                "Loading..."}}
                                                             </p>
                                                             <p class="text-gray-500 cursor-default">
-                                                                      {{ data.siswa.find(s => s.id ===
-                                                                                absensi.id_siswa).nis || "Loading..." }}
+                                                                      {{data.siswa.find(s => s.id ==
+                                                                                absensi.id_siswa)?.nis || "Loading..."}}
                                                             </p>
-
-
-
                                                   </div>
+
                                                   <div class="text-right">
                                                             <h1
-                                                                      :class="`${statusColors[absensi.keterangan]} text-6xl font-bold cursor-default`">
-                                                                      {{ absensi.keterangan.toUpperCase() ||
-                                                                                "Loading..." }}</h1>
-                                                            <p class="text-gray-400 cursor-default">{{
-                                                                      absensi.waktu || "Loading..." }} || {{
-                                                                                absensi.tanggal || "Loading..." }}</p>
+                                                                      :class="`${statusColors[absensi.keterangan] || 'text-gray-500'} text-6xl font-bold cursor-default`">
+                                                                      {{ absensi.keterangan?.toUpperCase() ||
+                                                                                "Loading..." }}
+                                                            </h1>
+                                                            <p class="text-gray-400 cursor-default">
+                                                                      {{ absensi.waktu || "Loading..." }} | {{
+                                                                                formatDate(absensi.tanggal) || "Loading..." }}
+                                                            </p>
                                                   </div>
                                         </div>
 
+                                        <p v-else class="text-gray-400 text-center">Loading data...</p>
+
+
                               </div>
-
-
-
 
                     </div>
           </div>

@@ -61,6 +61,46 @@
       "subdivisi_jurusan": "tidak ada",
       "id_jurusan": 4,
       "password": "12345"
+    },
+    {
+      "id": 3,
+      "nama": "Alya Putri Ramadhan",
+      "nis": "230501100",
+      "kelas": 2,
+      "absen": 10,
+      "subdivisi_jurusan": "A",
+      "id_jurusan": 1,
+      "password": "12345"
+    },
+    {
+      "id": 4,
+      "nama": "Bima Surya",
+      "nis": "230501101",
+      "kelas": 3,
+      "absen": 11,
+      "subdivisi_jurusan": "B",
+      "id_jurusan": 1,
+      "password": "12345"
+    },
+    {
+      "id": 5,
+      "nama": "Citra Anggraini",
+      "nis": "230501102",
+      "kelas": 4,
+      "absen": 12,
+      "subdivisi_jurusan": "A",
+      "id_jurusan": 2,
+      "password": "12345"
+    },
+    {
+      "id": 6,
+      "nama": "Damar Yusuf",
+      "nis": "230501103",
+      "kelas": 1,
+      "absen": 13,
+      "subdivisi_jurusan": "A",
+      "id_jurusan": 2,
+      "password": "12345"
     }
   ],
   "absensi": [
@@ -68,22 +108,71 @@
       "id": 1,
       "keterangan": "terlambat",
       "tanggal": "2025-02-10",
-      "waktu": "00:00:00",
+      "waktu": "07:15:00",
       "id_siswa": 1
     },
     {
       "id": 2,
       "keterangan": "hadir",
       "tanggal": "2025-02-13",
-      "waktu": "00:00:00",
+      "waktu": "07:00:00",
       "id_siswa": 2
     },
     {
       "id": 3,
       "keterangan": "hadir",
       "tanggal": "2025-02-25",
-      "waktu": "00:00:00",
+      "waktu": "07:00:00",
       "id_siswa": 2
+    },
+    {
+      "id": 4,
+      "keterangan": "hadir",
+      "tanggal": "2025-02-25",
+      "waktu": "07:05:00",
+      "id_siswa": 3
+    },
+    {
+      "id": 5,
+      "keterangan": "terlambat",
+      "tanggal": "2025-02-25",
+      "waktu": "07:20:00",
+      "id_siswa": 4
+    },
+    {
+      "id": 6,
+      "keterangan": "sakit",
+      "tanggal": "2025-02-24",
+      "waktu": "00:00:00",
+      "id_siswa": 3
+    },
+    {
+      "id": 7,
+      "keterangan": "hadir",
+      "tanggal": "2025-02-24",
+      "waktu": "07:00:00",
+      "id_siswa": 4
+    },
+    {
+      "id": 8,
+      "keterangan": "izin",
+      "tanggal": "2025-02-25",
+      "waktu": "00:00:00",
+      "id_siswa": 5
+    },
+    {
+      "id": 9,
+      "keterangan": "hadir",
+      "tanggal": "2025-02-24",
+      "waktu": "07:10:00",
+      "id_siswa": 5
+    },
+    {
+      "id": 10,
+      "keterangan": "terlambat",
+      "tanggal": "2025-02-25",
+      "waktu": "07:18:00",
+      "id_siswa": 6
     }
   ],
   "guru": [
