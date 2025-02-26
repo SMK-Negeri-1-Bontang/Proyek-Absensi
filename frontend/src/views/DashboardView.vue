@@ -1,6 +1,9 @@
 <script setup>
 import axios from 'axios';
 import { onMounted, reactive, watch } from 'vue';
+import router from '@/router';
+
+axios.defaults.withCredentials = true;
 
 onMounted(async () => {
           const today = new Date().toISOString().split("T")[0];
@@ -61,8 +64,8 @@ watch(
                               data.absensi = await fetchAbsensi(`?tanggal=${filter.tanggal}`);
                     }
 
-                    if ( filter.keterangan ) {
-                              data.absensi = data.absensi.filter( absensi => absensi.keterangan.toLowerCase() == filter.keterangan.toLowerCase() );
+                    if (filter.keterangan) {
+                              data.absensi = data.absensi.filter(absensi => absensi.keterangan.toLowerCase() == filter.keterangan.toLowerCase());
                     }
 
                     if (filter.jurusan) {
@@ -124,6 +127,15 @@ const data = reactive({
           "jurusan": []
 });
 
+const logout = async () => {
+          try {
+                    const response = await axios.post("/api/logout");
+                    router.push('/');
+          } catch (error) {
+                    console.error(error);
+          }
+}
+
 console.log(data);
 </script>
 
@@ -142,7 +154,7 @@ console.log(data);
                                                                       Pak Wahyu</h1>
                                                   </div>
                                                   <div>
-                                                            <i class="fas fa-sign-out-alt text-3xl cursor-pointer"></i>
+                                                            <i class="fas fa-sign-out-alt text-3xl cursor-pointer" @click="logout"></i>
                                                   </div>
                                         </div>
                                         <div class="grid grid-cols-5 gap-6 mt-2 px-[50px] pt-[20px] pb-[24px]">

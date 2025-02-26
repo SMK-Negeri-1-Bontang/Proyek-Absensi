@@ -3,6 +3,8 @@ import { reactive, ref, onMounted } from 'vue';
 import router from '@/router';
 import axios from 'axios';
 
+axios.defaults.withCredentials = true;
+
 onMounted(async () => {
     try {
         const response = await axios.get("/api/siswa");
@@ -14,6 +16,12 @@ onMounted(async () => {
     try {
         const response = await axios.get("/api/guru");
         users.guru = response.data;
+    } catch (error) {
+        console.error(error);
+    }
+
+    try {
+        const response = await axios.get("/api/logout");
     } catch (error) {
         console.error(error);
     }
@@ -130,7 +138,7 @@ const signup = async () => {
 
         try {
             const response = await axios.post('/api/siswa', formData);
-            router.push(`/`);
+            // router.push(`/`);
         } catch (error) {
             console.error('Error signing up', error);
         }
@@ -140,6 +148,9 @@ const signup = async () => {
 </script>
 
 <template>
+
+    <pre>{{ JSON.stringify(users.siswa, null, 2) }}</pre>
+
     <div
         class="flex items-center justify-center py-[150px] min-h-screen bg-[image:url('@/components/images/kde_mountain.png')] bg-cover">
         <div class="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
@@ -233,7 +244,8 @@ const signup = async () => {
 
                 </div>
 
-                <button class="w-full bg-[linear-gradient(to_right,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)] hover:bg-[linear-gradient(to_right,#9161b0,#5f8af0,#9db3ff)] text-white font-bold py-2 px-4 rounded-lg cursor-pointer"
+                <button
+                    class="w-full bg-[linear-gradient(to_right,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)] hover:bg-[linear-gradient(to_right,#9161b0,#5f8af0,#9db3ff)] text-white font-bold py-2 px-4 rounded-lg cursor-pointer"
                     type="submit">
                     Masuk
                 </button>
