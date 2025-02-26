@@ -138,7 +138,7 @@ const signup = async () => {
 
         try {
             const response = await axios.post('/api/siswa', formData);
-            // router.push(`/`);
+            router.push(`/`);
         } catch (error) {
             console.error('Error signing up', error);
         }
@@ -149,11 +149,11 @@ const signup = async () => {
 
 <template>
 
-    <pre>{{ JSON.stringify(users.siswa, null, 2) }}</pre>
+    <!--<pre>{{ JSON.stringify(users.siswa, null, 2) }}</pre>-->
 
     <div
         class="flex items-center justify-center py-[150px] min-h-screen bg-[image:url('@/components/images/kde_mountain.png')] bg-cover">
-        <div class="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
+        <div class="w-full max-w-md bg-gray-800 p-8 pt-16 rounded-lg shadow-lg">
             <img src="@/components/images/Logo.png" alt="logo" class="h-16 mx-auto">
             <h1 class="text-2xl font-bold text-center mb-6 text-white">Sign-up</h1>
 
@@ -198,7 +198,7 @@ const signup = async () => {
 
 
 
-                    <div class="mb-6">
+                    <div class="mb-2">
                         <label class="block text-gray-400 text-sm font-bold mb-2" for="jurusan">Jurusan</label>
                         <select
                             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-800"
@@ -217,7 +217,7 @@ const signup = async () => {
                         <p v-if="form.jurusan.error" class="text-red-500 text-sm mt-2">Jurusan tidak valid</p>
                     </div>
 
-                    <div class="mb-6" v-if="form.jurusan.content === 1 || form.jurusan.content === 2">
+                    <div class="mb-2" v-if="form.jurusan.content === 1 || form.jurusan.content === 2">
                         <label class="block text-gray-400 text-sm font-bold mb-2" for="subdivisi">A/B</label>
                         <select
                             class="w-22 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-800"
@@ -229,7 +229,7 @@ const signup = async () => {
                         <p v-if="form.subdivisi.error" class="text-red-500 text-sm mt-2">Subdivisi tidak valid</p>
                     </div>
 
-                    <div class="mb-6">
+                    <div class="mb-2">
                         <label class="block text-gray-400 text-sm font-bold mb-2" for="kelas">Kelas</label>
                         <select
                             class="w-22 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-800"
@@ -243,6 +243,8 @@ const signup = async () => {
                     </div>
 
                 </div>
+
+                <p class="mb-6 text-sm"><RouterLink to="/" class="text-white">Log in ></RouterLink></p>
 
                 <button
                     class="w-full bg-[linear-gradient(to_right,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)] hover:bg-[linear-gradient(to_right,#9161b0,#5f8af0,#9db3ff)] text-white font-bold py-2 px-4 rounded-lg cursor-pointer"

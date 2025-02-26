@@ -1,9 +1,11 @@
 <script setup>
 import axios from 'axios';
-import { onMounted, reactive, watch } from 'vue';
+import { onMounted, reactive, watch, ref } from 'vue';
 import router from '@/router';
 
 axios.defaults.withCredentials = true;
+
+const user = ref([]);
 
 onMounted(async () => {
           const today = new Date().toISOString().split("T")[0];
@@ -25,6 +27,13 @@ onMounted(async () => {
           try {
                     const response = await axios.get(`/api/absensi?tanggal=${today}`);
                     data.absensi = response.data;
+          } catch (error) {
+                    console.error(error);
+          }
+
+          try {
+                    const response = await axios.get(`/api/auth-status`);
+                    user.value = response.data.user;
           } catch (error) {
                     console.error(error);
           }
@@ -150,8 +159,7 @@ console.log(data);
                                                             <img class="h-16 mr-8"
                                                                       src="@/components/images/Logo.png"></img>
                                                             <h1
-                                                                      class="text-[45px] font-bold cursor-default paytone-one-regular">
-                                                                      Pak Wahyu</h1>
+                                                                      class="text-[45px] font-bold cursor-default paytone-one-regular">{{ user.nama }}</h1>
                                                   </div>
                                                   <div>
                                                             <i class="fas fa-sign-out-alt text-3xl cursor-pointer" @click="logout"></i>
