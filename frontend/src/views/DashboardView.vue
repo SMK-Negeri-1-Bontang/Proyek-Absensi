@@ -5,7 +5,28 @@ import router from '@/router';
 
 axios.defaults.withCredentials = true;
 
-const user = ref([]);
+const sessionData = ref([]);
+const userData = ref([]);
+const statusColors = reactive({
+          hadir: "text-[#00FF7F]",
+          terlambat: "text-[#FF1A1A]",
+          menunggu: "text-white",
+          izin: "text-[#FFD700]",
+          alpha: "text-[#FF1A1A]"
+});
+const filter = reactive({
+          search: '',
+          kelas: [1, 2, 3, 4],
+          jurusan: 0,
+          subdivisi: '',
+          keterangan: '',
+          tanggal: new Date().toISOString().split("T")[0]
+});
+const data = reactive({
+          "siswa": [],
+          "absensi": [],
+          "jurusan": []
+});
 
 onMounted(async () => {
           const today = new Date().toISOString().split("T")[0];
@@ -32,29 +53,39 @@ onMounted(async () => {
           }
 
           try {
-                    const response = await axios.get(`/api/auth-status`);
-                    user.value = response.data.user;
+                    const response = await axios.get(`/api/session`);
+                    sessionData.value = response.data;
+                    userData.value = sessionData.value.user;
           } catch (error) {
                     console.error(error);
           }
 });
 
-const statusColors = reactive({
-          hadir: "text-[#00FF7F]",
-          terlambat: "text-[#FF1A1A]",
-          menunggu: "text-white",
-          izin: "text-[#FFD700]",
-          alpha: "text-[#FF1A1A]"
-});
-
-const filter = reactive({
-          search: '',
-          kelas: [1, 2, 3, 4],
-          jurusan: 0,
-          subdivisi: '',
-          keterangan: '',
-          tanggal: new Date().toISOString().split("T")[0]
-});
+function formatDate(dateString) {
+          const date = new Date(dateString);
+          return new Intl.DateTimeFormat("en-GB", {
+                    weekday: "long",
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric"
+          }).format(date);
+}
+async function fetchAbsensi(condition) {
+          try {
+                    const response = await axios.get(`/api/absensi${condition}`);
+                    return response.data;
+          } catch (error) {
+                    console.error(error);
+          }
+}
+async function logout() {
+          try {
+                    const response = await axios.post("/api/logout");
+                    router.push('/');
+          } catch (error) {
+                    console.error(error);
+          }
+}
 
 watch(
           () => filter.jurusan,
@@ -64,7 +95,6 @@ watch(
                     }
           }
 );
-
 watch(
           filter,
           async (newVal) => {
@@ -108,44 +138,6 @@ watch(
 
           }
 );
-
-async function fetchAbsensi(condition) {
-          try {
-                    console.log(`Fetching: /api/absensi${condition}`);
-                    const response = await axios.get(`/api/absensi${condition}`);
-                    console.log("API Response:", response.data);  // 👀 Debugging output
-                    return response.data;
-          } catch (error) {
-                    console.error(error);
-          }
-}
-
-function formatDate(dateString) {
-          const date = new Date(dateString);
-          return new Intl.DateTimeFormat("en-GB", {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric"
-          }).format(date);
-}
-
-const data = reactive({
-          "siswa": [],
-          "absensi": [],
-          "jurusan": []
-});
-
-const logout = async () => {
-          try {
-                    const response = await axios.post("/api/logout");
-                    router.push('/');
-          } catch (error) {
-                    console.error(error);
-          }
-}
-
-console.log(data);
 </script>
 
 <template>
@@ -159,10 +151,11 @@ console.log(data);
                                                             <img class="h-16 mr-8"
                                                                       src="@/components/images/Logo.png"></img>
                                                             <h1
-                                                                      class="text-[45px] font-bold cursor-default paytone-one-regular">{{ user.nama }}</h1>
+                                                                      class="text-[45px] font-bold cursor-default paytone-one-regular">
+                                                                      {{ user.nama }}</h1>
                                                   </div>
                                                   <div>
-                                                            <i class="fas fa-sign-out-alt text-3xl cursor-pointer" @click="logout"></i>
+                                                            <font-awesome-icon :icon="['fas', 'sign-out-alt']" class="text-4xl cursor-pointer" @click="logout" />
                                                   </div>
                                         </div>
                                         <div class="grid grid-cols-5 gap-6 mt-2 px-[50px] pt-[20px] pb-[24px]">

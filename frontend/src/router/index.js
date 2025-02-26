@@ -46,8 +46,7 @@ const redirectByRole = {
 
 router.beforeEach(async (to, from, next) => {
         try {
-                const response = await axios.get('/api/auth-status');
-                console.log('Auth response:', response.data); // ✅ Debug
+                const response = await axios.get('/api/session');
                 const isLoggedIn = response.data.loggedIn;
                 const user = response.data.user;
 
@@ -66,7 +65,7 @@ router.beforeEach(async (to, from, next) => {
                         next();
                 }
         } catch (error) {
-                console.error('Auth check failed:', error.response ? error.response.data : error);
+                console.error('Auth check failed:', error);
                 next('/');
         }
 });

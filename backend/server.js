@@ -225,12 +225,17 @@ const guru = [
 app.post('/login', (req, res) => {
           const { nama, password } = req.body;
           const users = [...siswa, ...guru];
-          const user = users.find(u => u.nama === nama && u.password === password);
+          const user = users.find(u => u.nama === nama);
 
-          if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-
-          req.session.user = { id: user.id, nama: user.nama, role: user.role }; // Store user in session
-          res.json({ message: 'Login successful' });
+          if (!user) {
+                    return res.status(401).json({ message: 'Invalid credentials', error: { nama: true, password: false } });
+          } else if (String(user.password) !== String(password)) {
+                    return res.status(401).json({ message: 'Invalid credentials', error: { nama: false, password: true } });
+          } else {
+                    const { userPassword, ...userSessionData } = user;
+                    req.session.user = userSessionData;
+                    res.json({ message: 'Login successful' });
+          }
 });
 
 app.get('/users', (req, res) => {
@@ -243,14 +248,14 @@ app.post('/logout', (req, res) => {
           });
 });
 
-app.get('/auth-status', (req, res) => {
+// auth-status
+app.get('/session', (req, res) => {
           if (req.session.user) {
                     res.json({ loggedIn: true, user: req.session.user });
           } else {
                     res.json({ loggedIn: false });
           }
 });
-
 
 /*
 // Protected route example
@@ -272,11 +277,44 @@ app.get('/siswa', (req, res) => {
 });
 
 app.post('/siswa', (req, res) => {
-          const newSiswa = { id: uuidv4(), ...req.body };
-          siswa.push(newSiswa);
-          res.status(201).json({ message: "Siswa added successfully", newSiswa });
-});
+          const newUser = req.body;
 
+          const inputErrors = {
+                    nama: false,
+                    nis: false,
+                    password: false,
+                    confirmPassword: false,
+                    kelas: false,
+                    subdivisi: false,
+                    jurusan: false
+          };
+
+          const namaUsers = [...siswa, ...guru].map(user => user.nama);
+          inputErrors.nama = namaUsers.includes(newUser.nama) || newUser.nama.length > 100;
+
+          const nisUsers = siswa.map(user => user.nis);
+          const nisNumber = Number(newUser.nis);
+          inputErrors.nis = !newUser.nis.trim() || isNaN(nisNumber) || newUser.nis.length > 100 || nisUsers.includes(newUser.nis);
+
+          inputErrors.password = newUser.password.length < 8;
+
+          inputErrors.confirmPassword = newUser.confirmPassword !== newUser.password;
+
+          inputErrors.kelas = !newUser.kelas;
+
+          inputErrors.jurusan = !newUser.id_jurusan;
+
+          inputErrors.subdivisi = (newUser.jurusan === 1 || newUser.jurusan === 2) && !newUser.subdivisi.trim();
+
+          if ( !Object.values(inputErrors).some(value => value === true) ) {
+                    const newSiswa = { id: uuidv4(), ...newUser };
+                    siswa.push(newSiswa);
+                    res.status(201).json({ message: "Siswa added successfully", newSiswa });
+          } else {
+                    res.status(400).json({ message: "Validation failed", errors: inputErrors })
+          }
+
+});
 
 app.get('/absensi', (req, res) => {
           const { tanggal, id } = req.query;
@@ -287,8 +325,8 @@ app.get('/absensi', (req, res) => {
                     return res.json(filteredAbsensi);
           }
 
-          if ( id ) {
-                    filteredAbsensi = absensi.find( a => a.id == id );
+          if (id) {
+                    filteredAbsensi = absensi.find(a => a.id == id);
                     return res.json(filteredAbsensi);
           }
 

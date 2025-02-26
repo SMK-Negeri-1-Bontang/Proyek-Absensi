@@ -7,8 +7,25 @@ import router from '@/router';
 axios.defaults.withCredentials = true;
 
 const showText = ref(false);
+const sessionData = ref([]);
+const userData = ref([]);
 
-const logout = async () => {
+onMounted(async () => {
+  setTimeout(() => {
+    showText.value = true;
+  }, 500);
+
+  try {
+    const response = await axios.get("/api/session");
+    sessionData.value = response.data;
+    userData.value = sessionData.value.user;
+  } catch (error) {
+    console.error(error);
+  }
+
+});
+
+async function logout() {
   try {
     const response = await axios.post("/api/logout");
     router.push('/');
@@ -17,11 +34,6 @@ const logout = async () => {
   }
 }
 
-onMounted(() => {
-  setTimeout(() => {
-    showText.value = true;
-  }, 500);
-});
 </script>
 
 <template>

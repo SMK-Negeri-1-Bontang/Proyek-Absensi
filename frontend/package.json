@@ -10,6 +10,8 @@
                 "server": "json-server --watch src/data.json --port 5000"
         },
         "dependencies": {
+                "@fortawesome/free-solid-svg-icons": "^6.7.2",
+                "@fortawesome/vue-fontawesome": "^3.0.8",
                 "@tailwindcss/vite": "^4.0.6",
                 "@vueuse/motion": "^2.2.6",
                 "absensi": "file:",

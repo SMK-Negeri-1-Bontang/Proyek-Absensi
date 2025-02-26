@@ -1,16 +1,25 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import VueCookies from 'vue-cookies';
 import router from '@/router';
 import axios from 'axios';
 import { RouterLink } from 'vue-router';
 
+const users = ref([])
 const form = reactive({
     nama: { content: '', error: false },
     password: { content: '', error: false }
 });
 
-const login = async () => {
+onMounted(async () => {
+    try {
+        const response = await axios.get("/api/users");
+        users.value = response.data;
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+async function login() {
     form.nama.error = false;
     form.password.error = false;
 
@@ -18,8 +27,6 @@ const login = async () => {
         nama: form.nama.content,
         password: form.password.content
     };
-
-    console.log(formData);
 
     try {
         const user = users.value.find(u => u.nama === formData.nama && u.password === formData.password);
@@ -31,32 +38,17 @@ const login = async () => {
             router.push(`/dashboard`);
         }
     } catch (error) {
-        const user = users.value.find(u => u.nama === formData.nama);
+        const errors = error.response.data.error;
 
-        if (!user) {
+        if ( errors.nama ) {
             form.nama.error = true;
-        } else if ( String(user.password) !== String(form.password) ) {
+        } else if ( errors.password ) {
             form.password.error = true;
         }
 
         console.error('Error signing up', error);
     }
 };
-
-const users = ref([])
-
-onMounted(async () => {
-    try {
-        const response = await axios.get("/api/users");
-        users.value = response.data;
-
-        console.log(response.data)
-
-    } catch (error) {
-        console.error(error);
-    }
-});
-
 </script>
 
 <template>
@@ -89,7 +81,7 @@ onMounted(async () => {
                 </div>
 
                 <p class="mb-6 text-sm">
-                    <RouterLink to="/register" class="text-white">Sign up ></RouterLink>
+                    <RouterLink to="/register" class="text-white">Sign up <font-awesome-icon :icon="['fas', 'arrow-right']" class="text-white" /></RouterLink>
                 </p>
 
                 <button
