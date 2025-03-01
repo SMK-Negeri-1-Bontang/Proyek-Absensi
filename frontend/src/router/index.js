@@ -5,10 +5,16 @@ import DashboardView from '@/views/DashboardView.vue'
 import SplashscreenView from '@/views/SplashscreenView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import SignupView from '@/views/SignupView.vue'
+import GuruSignUpView from '@/views/GuruSignUpView.vue'
 
 const router = createRouter({
         history: createWebHistory(import.meta.env.BASE_URL),
         routes: [
+                {
+                        path: '/register-guru',
+                        name: 'guru-signup',
+                        component: GuruSignUpView
+                },
                 {
                         path: '/',
                         name: 'login',
