@@ -2,9 +2,35 @@ const express = require('express');
 const session = require('express-session');
 const { v4: uuidv4 } = require('uuid');
 const cors = require('cors');
+const cron = require("node-cron");
 const PORT = process.env.PORT || 5000;
 
 const app = express();
+
+console.log("Server is starting...");
+
+cron.schedule("5 8 * * *", () => {
+          console.log("Mengecek siswa yang belum absen...");
+
+          const today = new Date().toISOString().split("T")[0];
+          const absentStudents = siswa.filter(student =>
+                    !absensi.some(record => record.id_siswa === student.id && record.tanggal === today)
+          );
+
+          absentStudents.forEach(student => {
+                    absensi.push({
+                              id: uuidv4(),
+                              id_siswa: student.id,
+                              tanggal: today,
+                              waktu: "08:05:00",
+                              keterangan: "alpha"
+                    });
+          });
+
+          console.log(`Mengabsen ${absentStudents.length} siswa sebagai "alpha"`);
+}, {
+          timezone: "Asia/Makassar"
+});
 
 app.use(express.json());
 app.use(cors({
@@ -12,7 +38,6 @@ app.use(cors({
           credentials: true              // Allow session cookie to be sent
 }));
 
-// Configure session middleware
 app.use(session({
           secret: '2763',  // Change this to a secure key
           resave: false,
@@ -20,7 +45,6 @@ app.use(session({
           cookie: { secure: false, maxAge: 1000 * 60 * 60 } // Set to true if using HTTPS in production
 }));
 
-// Dummy user data for demonstration
 const jurusan = [
           {
                     "id": 1,
@@ -221,7 +245,6 @@ const guru = [
           }
 ];
 
-// Login endpoint
 app.post('/login', (req, res) => {
           const { nama, password } = req.body;
           const waktu = new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
@@ -233,7 +256,7 @@ app.post('/login', (req, res) => {
                     ontime: false
           }
 
-          if ( user && user.role == "siswa" && !(waktu >= "06:00:00" && waktu <= "08:00:00") ) {
+          if (user && user.role == "siswa" && !(waktu >= "06:00:00" && waktu <= "08:00:00")) {
                     error.ontime = true;
           }
 
@@ -243,7 +266,7 @@ app.post('/login', (req, res) => {
           } else if (String(user.password) !== String(password)) {
                     error.password = true;
                     return res.status(401).json({ message: 'Invalid credentials', error: error });
-          } else if ( error.ontime )  {
+          } else if (error.ontime) {
                     return res.status(401).json({ message: 'Invalid credentials', error: error });
           } else {
                     const { userPassword, ...userSessionData } = user;
@@ -262,7 +285,6 @@ app.post('/logout', (req, res) => {
           });
 });
 
-// auth-status
 app.get('/session', (req, res) => {
           if (req.session.user) {
                     res.json({ loggedIn: true, user: req.session.user });
@@ -353,7 +375,6 @@ app.get('/absensi', (req, res) => {
 
           res.json(filteredAbsensi);
 });
-
 
 app.post('/absensi', (req, res) => {
           const newAbsen = req.body;
