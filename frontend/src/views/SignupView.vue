@@ -3,49 +3,7 @@ import { reactive, ref, onMounted } from 'vue';
 import router from '@/router';
 import axios from 'axios';
 
-onMounted(async () => {
-    try {
-        const response = await axios.get("/api/siswa");
-        users.siswa = response.data;
-    } catch (error) {
-        console.error(error);
-    }
-
-    try {
-        const response = await axios.get("/api/guru");
-        users.guru = response.data;
-    } catch (error) {
-        console.error(error);
-    }
-});
-
-const users = reactive({
-    siswa: [],
-    guru: []
-});
-
-function extractValues(array, key) {
-    let result = []; // Create an empty array to store values
-
-    for (let i = 0; i < array.length; i++) { // Loop through each object in the array
-        let item = array[i]; // Get the current object
-
-        if (item[key] !== undefined) { // Check if the object has the given key
-            result.push(item[key]); // Add the value to the result array
-        }
-    }
-
-    return result; // Return the array with extracted values
-}
-
-function containsValue(array, searchString) {
-    for (let i = 0; i < array.length; i++) { // Loop through each item in the array
-        if (array[i] === searchString) { // Check if the item matches the string
-            return true; // If found, return true
-        }
-    }
-    return false; // If no match is found, return false
-}
+axios.defaults.withCredentials = true;
 
 const form = reactive({
     nama: { content: '', error: false },
@@ -56,95 +14,69 @@ const form = reactive({
     subdivisi: { content: 'tidak ada', error: false },
     jurusan: { content: 0, error: false }
 });
+const users = ref([]);
 
-function validate() {
-    let notValid = 0;
-
-    const namaUsers = extractValues(users.siswa, "nama").concat(extractValues(users.guru, "nama"));
-    if (containsValue(namaUsers, form.nama.content) || form.nama.content.length > 100) {
-        form.nama.error = true;
-        notValid++;
-    } else {
-        form.nama.error = false;
+onMounted(async () => {
+    try {
+        const response = await axios.get("/api/users");
+        users.value = response.data;
+    } catch (error) {
+        console.error(error);
     }
-
-    const nisUsers = extractValues(users.siswa, "nis");
-    const nisNumber = Number(form.nis.content);
-
-    if (!form.nis.content.trim() || isNaN(nisNumber) || form.nis.content.length > 100 || containsValue(nisUsers, form.nis.content)) {
-        form.nis.error = true;
-        notValid++;
-    } else {
-        form.nis.error = false;
-    }
-
-    if (form.password.content.length < 8) {
-        form.password.error = true;
-        notValid++;
-    } else {
-        form.password.error = false;
-    }
-
-    if (form.confirmPassword.content !== form.password.content) {
-        form.confirmPassword.error = true;
-        notValid++;
-    } else {
-        form.confirmPassword.error = false;
-    }
-
-    if (!form.kelas.content) {
-        form.kelas.error = true;
-        notValid++;
-    } else {
-        form.kelas.error = false;
-    }
-
-    if (!form.jurusan.content) {
-        form.jurusan.error = true;
-        notValid++;
-    } else {
-        form.jurusan.error = false;
-    }
-
-    if ((form.jurusan.content === 1 || form.jurusan.content === 2) && !form.subdivisi.content.trim()) {
-        form.subdivisi.error = true;
-        notValid++;
-    } else {
-        form.subdivisi.error = false;
-    }
-
-    return notValid === 0;
-}
+});
 
 const signup = async () => {
-    if (validate()) {
-        const formData = {
-            nama: form.nama.content,
-            nis: form.nis.content,
-            kelas: form.kelas.content,
-            absen: 0,
-            subdivisi: form.subdivisi.content,
-            id_jurusan: form.jurusan.content,
-            password: form.password.content
-        };
+    const formData = {
+        nama: form.nama.content,
+        nis: form.nis.content,
+        kelas: form.kelas.content,
+        absen: 0,
+        subdivisi: form.subdivisi.content,
+        id_jurusan: form.jurusan.content,
+        password: form.password.content,
+        confirmPassword: form.confirmPassword.content
+    };
 
-        try {
-            const response = await axios.post('/api/siswa', formData);
-            router.push(`/`);
-        } catch (error) {
-            console.error('Error signing up', error);
-        }
+    form.nama.error = false;
+    form.nis.error = false;
+    form.kelas.error = false;
+    form.subdivisi.error = false;
+    form.jurusan.error = false;
+    form.password.error = false;
+    form.confirmPassword.error = false;
+
+    console.log( formData )
+
+    try {
+        const response = await axios.post('/api/siswa', formData);
+        router.push(`/`);
+    } catch (error) {
+        console.log(error)
+
+        const errors = error.response?.data?.errors || {};
+
+        form.nama.error = errors.nama || false;
+        form.nis.error = errors.nis || false;
+        form.kelas.error = errors.kelas || false;
+        form.subdivisi.error = errors.subdivisi || false;
+        form.jurusan.error = errors.jurusan || false;
+        form.password.error = errors.password || false;
+        form.confirmPassword.error = errors.confirmPassword || false;
+
+        console.error('Error signing up', error);
     }
 };
-
 </script>
 
 <template>
+
+    <!--<pre>{{ JSON.stringify(users.siswa, null, 2) }}</pre>-->
+
     <div
         class="flex items-center justify-center py-[150px] min-h-screen bg-[image:url('@/components/images/kde_mountain.png')] bg-cover">
-        <div class="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
+        <div class="w-full max-w-md bg-gray-800 p-8 pt-16 rounded-lg shadow-lg">
             <img src="@/components/images/Logo.png" alt="logo" class="h-16 mx-auto">
-            <h1 class="text-2xl font-bold text-center mb-6 text-white">Sign-up</h1>
+            <h1 class="text-2xl font-bold text-center mb-6 text-white">Sign up</h1>
 
             <form @submit.prevent="signup">
                 <div class="mb-4">
@@ -187,7 +119,7 @@ const signup = async () => {
 
 
 
-                    <div class="mb-6">
+                    <div class="mb-2">
                         <label class="block text-gray-400 text-sm font-bold mb-2" for="jurusan">Jurusan</label>
                         <select
                             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-800"
@@ -206,7 +138,7 @@ const signup = async () => {
                         <p v-if="form.jurusan.error" class="text-red-500 text-sm mt-2">Jurusan tidak valid</p>
                     </div>
 
-                    <div class="mb-6" v-if="form.jurusan.content === 1 || form.jurusan.content === 2">
+                    <div class="mb-2" v-if="form.jurusan.content === 1 || form.jurusan.content === 2">
                         <label class="block text-gray-400 text-sm font-bold mb-2" for="subdivisi">A/B</label>
                         <select
                             class="w-22 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-800"
@@ -218,7 +150,7 @@ const signup = async () => {
                         <p v-if="form.subdivisi.error" class="text-red-500 text-sm mt-2">Subdivisi tidak valid</p>
                     </div>
 
-                    <div class="mb-6">
+                    <div class="mb-2">
                         <label class="block text-gray-400 text-sm font-bold mb-2" for="kelas">Kelas</label>
                         <select
                             class="w-22 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-800"
@@ -233,9 +165,15 @@ const signup = async () => {
 
                 </div>
 
-                <button class="w-full bg-[linear-gradient(to_right,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)] hover:bg-[linear-gradient(to_right,#9161b0,#5f8af0,#9db3ff)] text-white font-bold py-2 px-4 rounded-lg cursor-pointer"
+                <p class="mb-6 text-sm">
+                    <RouterLink to="/" class="text-white">Log in <font-awesome-icon :icon="['fas', 'arrow-right']"
+                            class="text-white" /></RouterLink>
+                </p>
+
+                <button
+                    class="w-full bg-[linear-gradient(to_right,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)] hover:bg-[linear-gradient(to_right,#9161b0,#5f8af0,#9db3ff)] text-white font-bold py-2 px-4 rounded-lg cursor-pointer"
                     type="submit">
-                    Masuk
+                    Daftar
                 </button>
             </form>
 

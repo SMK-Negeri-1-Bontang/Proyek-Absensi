@@ -1,6 +1,32 @@
 <script setup>
 import axios from 'axios';
-import { onMounted, reactive, watch } from 'vue';
+import { onMounted, reactive, watch, ref } from 'vue';
+import router from '@/router';
+
+axios.defaults.withCredentials = true;
+
+const sessionData = ref([]);
+const userData = ref([]);
+const statusColors = reactive({
+          hadir: "text-[#00FF7F]",
+          terlambat: "text-[#FF1A1A]",
+          menunggu: "text-white",
+          izin: "text-[#FFD700]",
+          alpha: "text-[#FF1A1A]"
+});
+const filter = reactive({
+          search: '',
+          kelas: [1, 2, 3, 4],
+          jurusan: 0,
+          subdivisi: '',
+          keterangan: '',
+          tanggal: new Date().toISOString().split("T")[0]
+});
+const data = reactive({
+          "siswa": [],
+          "absensi": [],
+          "jurusan": []
+});
 
 onMounted(async () => {
           const today = new Date().toISOString().split("T")[0];
@@ -25,24 +51,41 @@ onMounted(async () => {
           } catch (error) {
                     console.error(error);
           }
+
+          try {
+                    const response = await axios.get(`/api/session`);
+                    sessionData.value = response.data;
+                    userData.value = sessionData.value.user;
+          } catch (error) {
+                    console.error(error);
+          }
 });
 
-const statusColors = reactive({
-          hadir: "text-[#00FF7F]",
-          terlambat: "text-[#FF1A1A]",
-          menunggu: "text-white",
-          izin: "text-[#FFD700]",
-          alpha: "text-[#FF1A1A]"
-});
-
-const filter = reactive({
-          search: '',
-          kelas: [1, 2, 3, 4],
-          jurusan: 0,
-          subdivisi: '',
-          keterangan: '',
-          tanggal: new Date().toISOString().split("T")[0]
-});
+function formatDate(dateString) {
+          const date = new Date(dateString);
+          return new Intl.DateTimeFormat("en-GB", {
+                    weekday: "long",
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric"
+          }).format(date);
+}
+async function fetchAbsensi(condition) {
+          try {
+                    const response = await axios.get(`/api/absensi${condition}`);
+                    return response.data;
+          } catch (error) {
+                    console.error(error);
+          }
+}
+async function logout() {
+          try {
+                    const response = await axios.post("/api/logout");
+                    router.push('/');
+          } catch (error) {
+                    console.error(error);
+          }
+}
 
 watch(
           () => filter.jurusan,
@@ -52,7 +95,6 @@ watch(
                     }
           }
 );
-
 watch(
           filter,
           async (newVal) => {
@@ -61,8 +103,8 @@ watch(
                               data.absensi = await fetchAbsensi(`?tanggal=${filter.tanggal}`);
                     }
 
-                    if ( filter.keterangan ) {
-                              data.absensi = data.absensi.filter( absensi => absensi.keterangan.toLowerCase() == filter.keterangan.toLowerCase() );
+                    if (filter.keterangan) {
+                              data.absensi = data.absensi.filter(absensi => absensi.keterangan.toLowerCase() == filter.keterangan.toLowerCase());
                     }
 
                     if (filter.jurusan) {
@@ -96,35 +138,6 @@ watch(
 
           }
 );
-
-async function fetchAbsensi(condition) {
-          try {
-                    console.log(`Fetching: /api/absensi${condition}`);
-                    const response = await axios.get(`/api/absensi${condition}`);
-                    console.log("API Response:", response.data);  // 👀 Debugging output
-                    return response.data;
-          } catch (error) {
-                    console.error(error);
-          }
-}
-
-function formatDate(dateString) {
-          const date = new Date(dateString);
-          return new Intl.DateTimeFormat("en-GB", {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric"
-          }).format(date);
-}
-
-const data = reactive({
-          "siswa": [],
-          "absensi": [],
-          "jurusan": []
-});
-
-console.log(data);
 </script>
 
 <template>
@@ -139,10 +152,10 @@ console.log(data);
                                                                       src="@/components/images/Logo.png"></img>
                                                             <h1
                                                                       class="text-[45px] font-bold cursor-default paytone-one-regular">
-                                                                      Pak Wahyu</h1>
+                                                                      {{ userData.nama || '' }}</h1>
                                                   </div>
                                                   <div>
-                                                            <i class="fas fa-sign-out-alt text-3xl cursor-pointer"></i>
+                                                            <font-awesome-icon :icon="['fas', 'sign-out-alt']" class="text-4xl cursor-pointer" @click="logout" />
                                                   </div>
                                         </div>
                                         <div class="grid grid-cols-5 gap-6 mt-2 px-[50px] pt-[20px] pb-[24px]">
