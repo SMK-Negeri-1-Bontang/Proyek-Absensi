@@ -152,7 +152,7 @@ watch(
                                                                       src="@/components/images/Logo.png"></img>
                                                             <h1
                                                                       class="text-[45px] font-bold cursor-default paytone-one-regular">
-                                                                      {{ user.nama }}</h1>
+                                                                      {{ userData.nama || '' }}</h1>
                                                   </div>
                                                   <div>
                                                             <font-awesome-icon :icon="['fas', 'sign-out-alt']" class="text-4xl cursor-pointer" @click="logout" />

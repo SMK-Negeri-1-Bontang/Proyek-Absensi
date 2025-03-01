@@ -11,7 +11,8 @@ const sessionData = ref([]);
 const userData = ref([]);
 const form = reactive({
     nama: { content: '', error: false },
-    password: { content: '', error: false }
+    password: { content: '', error: false },
+    ontime: false
 });
 
 onMounted(async () => {
@@ -63,15 +64,11 @@ async function login() {
         password: form.password.content
     };
 
-    if ( !(waktu >= "06:00:00" && waktu <= "08:00:00") ) {
-        return console.error("Anda diantara terlalu cepat atau terlalu terlambat");
-    }
-
     try {
         const user = users.value.find(u => u.nama === formData.nama && u.password === formData.password);
         const response = await axios.post('/api/login', formData);
 
-        if (user.role === "siswa") {
+        if (user.role === "siswa" && (waktu >= "06:00:00" && waktu <= "08:00:00")) {
             await getSessionData();
             absen();
             router.push(`/splash`);
@@ -80,6 +77,10 @@ async function login() {
         }
     } catch (error) {
         const errors = error.response.data.error;
+
+        if (errors.ontime) {
+            form.ontime = true;
+        }
 
         if (errors.nama) {
             form.nama.error = true;
@@ -119,6 +120,7 @@ async function login() {
                         type="password" id="password" name="password" placeholder="Masukkan kata sandi"
                         v-model="form.password.content" required>
                     <p v-if="form.password.error" class="text-red-500 text-sm mt-2">Password tidak valid</p>
+                    <p v-if="form.ontime" class="text-red-500 text-sm mt-2">Anda hanya bisa absen pada jam 6-8 pagi.</p>
                 </div>
 
                 <p class="mb-6 text-sm">

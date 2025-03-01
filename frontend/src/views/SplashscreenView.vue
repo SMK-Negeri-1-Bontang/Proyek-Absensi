@@ -51,6 +51,8 @@ async function getAbsenData() {
     console.error(error);
   }
 }
+
+console.log(new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0]);
 </script>
 
 <template>

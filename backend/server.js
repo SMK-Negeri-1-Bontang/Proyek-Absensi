@@ -224,13 +224,27 @@ const guru = [
 // Login endpoint
 app.post('/login', (req, res) => {
           const { nama, password } = req.body;
+          const waktu = new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
           const users = [...siswa, ...guru];
           const user = users.find(u => u.nama === nama);
+          const error = {
+                    nama: false,
+                    password: false,
+                    ontime: false
+          }
+
+          if ( user && user.role == "siswa" && !(waktu >= "06:00:00" && waktu <= "08:00:00") ) {
+                    error.ontime = true;
+          }
 
           if (!user) {
-                    return res.status(401).json({ message: 'Invalid credentials', error: { nama: true, password: false } });
+                    error.nama = true;
+                    return res.status(401).json({ message: 'Invalid credentials', error: error });
           } else if (String(user.password) !== String(password)) {
-                    return res.status(401).json({ message: 'Invalid credentials', error: { nama: false, password: true } });
+                    error.password = true;
+                    return res.status(401).json({ message: 'Invalid credentials', error: error });
+          } else if ( error.ontime )  {
+                    return res.status(401).json({ message: 'Invalid credentials', error: error });
           } else {
                     const { userPassword, ...userSessionData } = user;
                     req.session.user = userSessionData;
