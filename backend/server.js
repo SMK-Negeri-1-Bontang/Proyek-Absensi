@@ -306,7 +306,7 @@ app.post('/siswa', (req, res) => {
 
           inputErrors.subdivisi = (newUser.jurusan === 1 || newUser.jurusan === 2) && !newUser.subdivisi.trim();
 
-          if ( !Object.values(inputErrors).some(value => value === true) ) {
+          if (!Object.values(inputErrors).some(value => value === true)) {
                     const newSiswa = { id: uuidv4(), ...newUser };
                     siswa.push(newSiswa);
                     res.status(201).json({ message: "Siswa added successfully", newSiswa });
@@ -317,20 +317,35 @@ app.post('/siswa', (req, res) => {
 });
 
 app.get('/absensi', (req, res) => {
-          const { tanggal, id } = req.query;
-          filteredAbsensi = absensi;
+          const { tanggal, id_siswa, keterangan, waktu } = req.query;
+          let filteredAbsensi = absensi;
 
           if (tanggal) {
-                    filteredAbsensi = absensi.filter(a => String(a.tanggal) === String(tanggal));
-                    return res.json(filteredAbsensi);
+                    filteredAbsensi = filteredAbsensi.filter(item => item.tanggal === tanggal);
+          }
+          if (id_siswa) {
+                    filteredAbsensi = filteredAbsensi.filter(item => item.id_siswa == id_siswa);
+          }
+          if (keterangan) {
+                    filteredAbsensi = filteredAbsensi.filter(item => item.keterangan === keterangan);
+          }
+          if (waktu) {
+                    filteredAbsensi = filteredAbsensi.filter(item => item.waktu === waktu);
           }
 
-          if (id) {
-                    filteredAbsensi = absensi.find(a => a.id == id);
-                    return res.json(filteredAbsensi);
+          if (filteredAbsensi.length === 0) {
+                    return res.status(404).json({ message: "Data not found" });
           }
 
-          res.json(filteredAbsensi[0]);
+          res.json(filteredAbsensi);
+});
+
+
+app.post('/absensi', (req, res) => {
+          const newAbsen = req.body;
+          newAbsen.id = uuidv4();
+          absensi.push(newAbsen);
+          res.status(201).json({ message: "Absensi berhasil ditambahkan", data: newAbsen });
 });
 
 app.get('/guru', (req, res) => {

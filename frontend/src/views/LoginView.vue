@@ -4,7 +4,11 @@ import router from '@/router';
 import axios from 'axios';
 import { RouterLink } from 'vue-router';
 
-const users = ref([])
+axios.defaults.withCredentials = true;
+
+const users = ref([]);
+const sessionData = ref([]);
+const userData = ref([]);
 const form = reactive({
     nama: { content: '', error: false },
     password: { content: '', error: false }
@@ -19,20 +23,57 @@ onMounted(async () => {
     }
 });
 
+async function getSessionData() {
+    try {
+        const response = await axios.get("/api/session");
+        sessionData.value = response.data;
+        userData.value = sessionData.value.user;
+    } catch (error) {
+        console.error(error);
+    }
+}
+async function absen() {
+    const waktu = new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
+    const absenData = {
+        keterangan: '',
+        tanggal: new Date().toISOString().split("T")[0],
+        waktu: waktu,
+        id_siswa: userData.value.id
+    }
+
+    if (waktu >= "06:00:00" && waktu <= "07:05:00") {
+        absenData.keterangan = "hadir";
+    } else if (waktu > "07:05:00" && waktu < "08:00:00") {
+        absenData.keterangan = "terlambat";
+    }
+
+    try {
+        const absensi = await axios.post('/api/absensi', absenData);
+    } catch (error) {
+        console.error(error);
+    }
+}
 async function login() {
     form.nama.error = false;
     form.password.error = false;
 
+    const waktu = new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
     const formData = {
         nama: form.nama.content,
         password: form.password.content
     };
+
+    if ( !(waktu >= "06:00:00" && waktu <= "08:00:00") ) {
+        return console.error("Anda diantara terlalu cepat atau terlalu terlambat");
+    }
 
     try {
         const user = users.value.find(u => u.nama === formData.nama && u.password === formData.password);
         const response = await axios.post('/api/login', formData);
 
         if (user.role === "siswa") {
+            await getSessionData();
+            absen();
             router.push(`/splash`);
         } else if (user.role === "guru") {
             router.push(`/dashboard`);
@@ -40,9 +81,9 @@ async function login() {
     } catch (error) {
         const errors = error.response.data.error;
 
-        if ( errors.nama ) {
+        if (errors.nama) {
             form.nama.error = true;
-        } else if ( errors.password ) {
+        } else if (errors.password) {
             form.password.error = true;
         }
 
@@ -60,7 +101,7 @@ async function login() {
         <div class="w-full max-w-md bg-gray-800 p-8 pt-16 rounded-lg shadow-lg">
             <img src="/src/components/images/Logo.png" alt="logo" class="h-16 mx-auto">
             <!-- mx-auto mungkin merusakkan sesuatu-->
-            <h1 class="text-2xl font-bold text-center mb-6 text-white">Login</h1>
+            <h1 class="text-2xl font-bold text-center mb-6 text-white">Log in</h1>
 
             <form @submit.prevent="login">
                 <div class="mb-4">
@@ -81,7 +122,8 @@ async function login() {
                 </div>
 
                 <p class="mb-6 text-sm">
-                    <RouterLink to="/register" class="text-white">Sign up <font-awesome-icon :icon="['fas', 'arrow-right']" class="text-white" /></RouterLink>
+                    <RouterLink to="/register" class="text-white">Sign up <font-awesome-icon
+                            :icon="['fas', 'arrow-right']" class="text-white" /></RouterLink>
                 </p>
 
                 <button

@@ -76,7 +76,7 @@ const signup = async () => {
         class="flex items-center justify-center py-[150px] min-h-screen bg-[image:url('@/components/images/kde_mountain.png')] bg-cover">
         <div class="w-full max-w-md bg-gray-800 p-8 pt-16 rounded-lg shadow-lg">
             <img src="@/components/images/Logo.png" alt="logo" class="h-16 mx-auto">
-            <h1 class="text-2xl font-bold text-center mb-6 text-white">Sign-up</h1>
+            <h1 class="text-2xl font-bold text-center mb-6 text-white">Sign up</h1>
 
             <form @submit.prevent="signup">
                 <div class="mb-4">
@@ -173,7 +173,7 @@ const signup = async () => {
                 <button
                     class="w-full bg-[linear-gradient(to_right,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)] hover:bg-[linear-gradient(to_right,#9161b0,#5f8af0,#9db3ff)] text-white font-bold py-2 px-4 rounded-lg cursor-pointer"
                     type="submit">
-                    Masuk
+                    Daftar
                 </button>
             </form>
 
