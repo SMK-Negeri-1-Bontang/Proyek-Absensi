@@ -338,40 +338,92 @@ watch(
                               </div>
 
                               <div class="space-y-6" v-for="absensi in data.absensi" :key="data.absensi.id">
+                                <template>
+  <div v-if="data && data.siswa && data.jurusan && absensi"
+       class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700">
+    <div>
+      <h1 class="text-4xl font-bold cursor-default">
+        {{ data.siswa.find(s => s.id == absensi.id_siswa)?.nama || "Loading..." }}
+      </h1>
+      <p class="text-gray-400 cursor-default">
+        {{ data.jurusan.find(j => j.id == data.siswa.find(s => s.id == absensi.id_siswa)?.id_jurusan)?.nama || "Loading..." }}
+      </p>
+      <p class="text-gray-500 cursor-default">
+        {{ data.siswa.find(s => s.id == absensi.id_siswa)?.nis || "Loading..." }}
+      </p>
+    </div>
 
-                                        <div v-if="data && data.siswa && data.jurusan && absensi"
-                                                  class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700">
-                                                  <div>
-                                                            <h1 class="text-4xl font-bold cursor-default">
-                                                                      {{data.siswa.find(s => s.id ==
-                                                                                absensi.id_siswa).nama || "Loading..."}}
-                                                            </h1>
-                                                            <p class="text-gray-400 cursor-default">
-                                                                      {{data.jurusan.find(j => j.id ==
-                                                                                data.siswa.find(s => s.id ==
-                                                                                          absensi.id_siswa)?.id_jurusan)?.nama ||
-                                                                                "Loading..."}}
-                                                            </p>
-                                                            <p class="text-gray-500 cursor-default">
-                                                                      {{data.siswa.find(s => s.id ==
-                                                                                absensi.id_siswa)?.nis || "Loading..."}}
-                                                            </p>
-                                                  </div>
+    <div class="text-right">
+      <div v-if="isEditing">
+        <select v-model="editedKeterangan" class="p-2 bg-gray-700 text-white rounded">
+          <option value="Hadir">Hadir</option>
+          <option value="Izin">Izin</option>
+          <option value="Sakit">Sakit</option>
+          <option value="Alpha">Alpha</option>
+        </select>
+        <button @click="saveEdit" class="ml-2 bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">Simpan</button>
+      </div>
+      <div v-else>
+        <h1 :class="`${statusColors[absensi.keterangan] || 'text-gray-500'} text-6xl font-bold cursor-default`">
+          {{ absensi.keterangan?.toUpperCase() || "Loading..." }}
+        </h1>
+        <p class="text-gray-400 cursor-default">
+          {{ absensi.waktu || "Loading..." }} | {{ formatDate(absensi.tanggal) || "Loading..." }}
+        </p>
+        <button @click="editKeterangan" class="mt-2 bg-yellow-500 hover:bg-yellow-700 text-white px-4 py-2 rounded">Edit</button>
+      </div>
+    </div>
+  </div>
+</template>
 
-                                                  <div class="text-right">
-                                                            <h1
-                                                                      :class="`${statusColors[absensi.keterangan] || 'text-gray-500'} text-6xl font-bold cursor-default`">
-                                                                      {{ absensi.keterangan?.toUpperCase() ||
-                                                                                "Loading..." }}
-                                                            </h1>
-                                                            <p class="text-gray-400 cursor-default">
-                                                                      {{ absensi.waktu || "Loading..." }} | {{
-                                                                                formatDate(absensi.tanggal) || "Loading..." }}
-                                                            </p>
-                                                  </div>
-                                        </div>
+<script>
+export default {
+  props: ['data', 'absensi', 'statusColors', 'formatDate'],
+  data() {
+    return {
+      isEditing: false,
+      editedKeterangan: this.absensi.keterangan
+    };
+  },
+  methods: {
+    editKeterangan() {
+      this.isEditing = true;
+      this.editedKeterangan = this.absensi.keterangan;
+    },
+    saveEdit() {
+      this.absensi.keterangan = this.editedKeterangan;
+      this.isEditing = false;
+    }
+  }
+};
+</script>
 
-                                        <p v-else class="text-gray-400 text-center">Loading data...</p>
+<script>
+export default {
+  props: ['data', 'absensi', 'statusColors', 'formatDate'],
+  data() {
+    return {
+      isEditing: false,
+      editedKeterangan: this.absensi.keterangan
+    };
+  },
+  methods: {
+    editKeterangan() {
+      this.isEditing = true;
+      this.editedKeterangan = this.absensi.keterangan;
+    },
+    saveEdit() {
+      this.absensi.keterangan = this.editedKeterangan;
+      this.isEditing = false;
+    }
+  }
+};
+</script>
+
+
+                                        <<p v-if="dataLoaded" class="text-gray-400 text-center">Data berhasil dimuat</p>
+<p v-else class="text-gray-400 text-center">Loading data...</p>
+
 
 
                               </div>
