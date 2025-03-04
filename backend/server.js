@@ -383,6 +383,21 @@ app.post('/absensi', (req, res) => {
           res.status(201).json({ message: "Absensi berhasil ditambahkan", data: newAbsen });
 });
 
+app.put('/absensi', (req, res) => {
+          const idAbsensi = req.body.id;
+          const newKeterangan = req.body.editedKeterangan;
+          const absen = absensi.find(a => a.id === idAbsensi);
+      
+          if (!absen) {
+              return res.status(404).json({ message: "Absensi tidak ditemukan" });
+          }
+      
+          absen.keterangan = newKeterangan;
+      
+          res.status(200).json({ message: "Absensi updated successfully", data: absen });
+      });
+      
+
 app.get('/guru', (req, res) => {
           res.json(guru);
 });
