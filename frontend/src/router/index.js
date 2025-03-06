@@ -54,9 +54,9 @@ router.beforeEach(async (to, from, next) => {
         try {
                 const response = await axios.get('/api/session');
                 const isLoggedIn = response.data.loggedIn;
-                const user = response.data.user;
+                const user = response.data.user || { nama: undefined };
 
-                console.log(user, to.name);
+                console.log(user.nama, to.name);
 
                 if (to.meta.requiresAuth && !isLoggedIn && to.path !== '/') {
                         console.log('Redirecting to login...');
