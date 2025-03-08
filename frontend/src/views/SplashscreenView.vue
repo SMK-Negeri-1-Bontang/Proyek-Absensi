@@ -6,6 +6,7 @@ import router from '@/router';
 
 axios.defaults.withCredentials = true;
 
+const showSplash = ref(true);
 const showText = ref(false);
 const sessionData = ref([]);
 const userData = ref([]);
@@ -20,8 +21,9 @@ const statusColors = reactive({
 
 onMounted(async () => {
   setTimeout(() => {
+    showSplash.value = false;
     showText.value = true;
-  }, 500);
+  }, 2000); // Durasi splash screen 2 detik
 
   try {
     const response = await axios.get("/api/session");
@@ -36,27 +38,31 @@ onMounted(async () => {
 
 async function logout() {
   try {
-    const response = await axios.post("/api/logout");
+    await axios.post("/api/logout");
     router.push('/');
   } catch (error) {
     console.error(error);
   }
 }
+
 async function getAbsenData() {
   try {
     const response = await axios.get(`api/absensi?tanggal=${new Date().toISOString().split("T")[0]}&id_siswa=${userData.value.id}`);
     absenData.value = response.data[0];
-    console.log(absenData.value);
   } catch (error) {
     console.error(error);
   }
 }
-
-console.log(new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0]);
 </script>
 
 <template>
   <div class="bg-gray-900 flex items-center justify-center min-h-screen">
+    <!-- Splash Screen -->
+    <div v-if="showSplash" class="fixed inset-0 flex items-center justify-center bg-gray-900">
+      <h1 class="text-white text-4xl font-bold animate-pulse">Loading...</h1>
+    </div>
+    
+    <!-- Main Content -->
     <div v-if="showText" v-motion :initial="{ scale: 0, opacity: 0, rotate: -10 }"
       :enter="{ scale: 1, opacity: 1, rotate: 0, transition: { duration: 0.8, ease: 'easeOut', bounce: 0.5 } }"
       class="text-center">
@@ -64,12 +70,11 @@ console.log(new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM
         :enter="{ opacity: 1, y: 0, scale: 1, transition: { delay: 300, duration: 0.8, ease: 'easeOut', bounce: 0.5 } }">
         Anda...
       </p>
-      <h1 :class="`${statusColors[absenData.keterangan]} text-6xl font-bold`" v-motion :initial="{ opacity: 0, y: 50, scale: 0.5 }"
-        :enter="{ opacity: 1, y: 0, scale: 1.2, transition: { delay: 600, duration: 0.8, ease: 'easeOut', bounce: 0.5 } }">
+      <h1 v-motion="absenData.keterangan === 'hadir' ? { initial: { scale: 0.5 }, enter: { scale: 1.5, transition: { duration: 0.8, ease: 'easeOut' } } } : {}"
+        :class="`${statusColors[absenData.keterangan]} text-6xl font-bold`">
         {{ absenData.keterangan.toUpperCase() }}
-    </h1>
+      </h1>
       <button class="text-white cursor-pointer" @click="logout">Log out</button>
     </div>
-
   </div>
 </template>
