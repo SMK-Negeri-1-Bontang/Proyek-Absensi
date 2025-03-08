@@ -247,7 +247,7 @@ const guru = [
 
 app.post('/login', (req, res) => {
           const { nama, password } = req.body;
-          const waktu = new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
+          const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
           const users = [...siswa, ...guru];
           const user = users.find(u => u.nama === nama);
           const error = {

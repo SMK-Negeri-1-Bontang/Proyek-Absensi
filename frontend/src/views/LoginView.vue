@@ -34,7 +34,7 @@ async function getSessionData() {
     }
 }
 async function absen() {
-    const waktu = new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
+    const waktu =  "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
     const absenData = {
         keterangan: '',
         tanggal: new Date().toISOString().split("T")[0],
@@ -58,7 +58,7 @@ async function login() {
     form.nama.error = false;
     form.password.error = false;
 
-    const waktu = new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
+    const waktu =  "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
     const formData = {
         nama: form.nama.content,
         password: form.password.content
