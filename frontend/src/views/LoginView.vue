@@ -12,8 +12,14 @@ const userData = ref([]);
 const form = reactive({
     nama: { content: '', error: false },
     password: { content: '', error: false },
-    ontime: false
+    ontime: false,
+    hari: false
 });
+const userPosition = {
+    latitude: 0.00,
+    longitude: 0.00,
+    error: false
+}
 
 onMounted(async () => {
     try {
@@ -22,6 +28,17 @@ onMounted(async () => {
     } catch (error) {
         console.error(error);
     }
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            userPosition.latitude = position.coords.latitude;
+            userPosition.longitude = position.coords.longitude;
+            console.log(`Received location: Lat ${userPosition.latitude}, Lon ${userPosition.longitude}`);
+        },
+        (error) => {
+            console.error("Error getting location:", error.message);
+        }
+    );
 });
 
 async function getSessionData() {
@@ -34,7 +51,7 @@ async function getSessionData() {
     }
 }
 async function absen() {
-    const waktu = new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
+    const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
     const absenData = {
         keterangan: '',
         tanggal: new Date().toISOString().split("T")[0],
@@ -58,10 +75,14 @@ async function login() {
     form.nama.error = false;
     form.password.error = false;
 
-    const waktu = new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
+    const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
     const formData = {
         nama: form.nama.content,
-        password: form.password.content
+        password: form.password.content,
+        userPosition: {
+            latitude: userPosition.latitude,
+            longitude: userPosition.longitude
+        }
     };
 
     try {
@@ -80,6 +101,14 @@ async function login() {
 
         if (errors.ontime) {
             form.ontime = true;
+        }
+
+        if (errors.hari) {
+            form.hari = true;
+        }
+
+        if (errors.position) {
+            userPosition.error = true;
         }
 
         if (errors.nama) {
@@ -121,6 +150,8 @@ async function login() {
                         v-model="form.password.content" required>
                     <p v-if="form.password.error" class="text-red-500 text-sm mt-2">Password tidak valid</p>
                     <p v-if="form.ontime" class="text-red-500 text-sm mt-2">Anda hanya bisa absen pada jam 6-8 pagi.</p>
+                    <p v-if="form.hari" class="text-red-500 text-sm mt-2">Anda hanya bisa absen pada hari Senin-Jum'at.</p>
+                    <p v-if="userPosition.error" class="text-red-500 text-sm mt-2">Tidak dapat mendapatkan lokasi anda.</p>
                 </div>
 
                 <p class="mb-6 text-sm">
