@@ -46,9 +46,19 @@ app.use(session({
 }));
 
 const lokasiSekolah = {
-    latitude: 0.00,
-    longitude: 0.00
-}
+    red: [
+        { latitude: 0.14239728878623928, longitude: 117.47539841054972 }, // Bottom Left
+        { latitude: 0.14365367596550838, longitude: 117.47618692105851 }  // Top Right
+    ],
+    yellow: [
+        { latitude: 0.14354758525449932, longitude: 117.47539210783744 }, // Bottom Left
+        { latitude: 0.14448500973330178, longitude: 117.47667389633806 }  // Top Right
+    ],
+    blue: [
+        { latitude: 0.14431282974424348, longitude: 117.4760895260051 },  // Bottom Left
+        { latitude: 0.14535028087835974, longitude: 117.47685637627917 }  // Top Right
+    ]
+};
 
 const jurusan = [
     {
@@ -253,8 +263,8 @@ const guru = [
 app.post('/login', (req, res) => {
     const { nama, password } = req.body;
     const userPosition = req.body.userPosition;
-    const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
-    const hari = "Monday" || new Date().toLocaleDateString('en-GB', { weekday: 'long' });
+    const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0]; // PLACEHOLDER FOR TESTING ( REPLACE )
+    const hari = "Monday" || new Date().toLocaleDateString('en-GB', { weekday: 'long' }); // PLACEHOLDER FOR TESTING ( REPLACE )
     const users = [...siswa, ...guru];
     const user = users.find(u => u.nama === nama);
     const error = {
@@ -262,10 +272,23 @@ app.post('/login', (req, res) => {
         password: false,
         ontime: false,
         hari: false,
-        position: false
+        position: ''
     }
 
-    console.log( new Date().toLocaleDateString('en-GB', { weekday: 'long' }) );
+    userPosition.latitude = lokasiSekolah.red[0].latitude + 0.0001; // PLACEHOLDER FOR TESTING ( DELETE )
+    userPosition.longitude = lokasiSekolah.red[0].longitude + 0.0001; // PLACEHOLDER FOR TESTING ( DELETE )
+
+    function isInsideZone(user, zone) {
+        const [bottomLeft, topRight] = zone;
+        return (
+            user.latitude >= bottomLeft.latitude &&
+            user.latitude <= topRight.latitude &&
+            user.longitude >= bottomLeft.longitude &&
+            user.longitude <= topRight.longitude
+        );
+    }
+
+    console.log(new Date().toLocaleDateString('en-GB', { weekday: 'long' }));
 
     if (user && user.role == "siswa" && !(waktu >= "06:00:00" && waktu <= "08:00:00")) {
         error.ontime = true;
@@ -276,9 +299,17 @@ app.post('/login', (req, res) => {
     }
 
     if (!userPosition.latitude || !userPosition.longitude) {
-        error.position = true;
+        error.position = 'Tidak dapat mendapatkan lokasi anda.';
     } else {
-        console.log(`Received location: Lat ${userPosition.latitude}, Lon ${userPosition.longitude}`);
+        if (
+            isInsideZone(userPosition, lokasiSekolah.red) ||
+            isInsideZone(userPosition, lokasiSekolah.yellow) ||
+            isInsideZone(userPosition, lokasiSekolah.blue)
+        ) {
+            console.log(`Received location: Lat ${userPosition.latitude}, Lon ${userPosition.longitude}`);
+        } else {
+            error.position = 'Anda tidak di sekolah.';
+        }
     }
 
     if (!user) {

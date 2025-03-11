@@ -15,11 +15,11 @@ const form = reactive({
     ontime: false,
     hari: false
 });
-const userPosition = {
+const userPosition = reactive({
     latitude: 0.00,
     longitude: 0.00,
-    error: false
-}
+    error: ''
+});
 
 onMounted(async () => {
     try {
@@ -51,7 +51,7 @@ async function getSessionData() {
     }
 }
 async function absen() {
-    const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
+    const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0]; // PLACEHOLDER FOR TESTING ( REPLACE )
     const absenData = {
         keterangan: '',
         tanggal: new Date().toISOString().split("T")[0],
@@ -75,7 +75,7 @@ async function login() {
     form.nama.error = false;
     form.password.error = false;
 
-    const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0];
+    const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0]; // PLACEHOLDER FOR TESTING ( REPLACE )
     const formData = {
         nama: form.nama.content,
         password: form.password.content,
@@ -108,7 +108,7 @@ async function login() {
         }
 
         if (errors.position) {
-            userPosition.error = true;
+            userPosition.error = errors.position;
         }
 
         if (errors.nama) {
@@ -151,7 +151,7 @@ async function login() {
                     <p v-if="form.password.error" class="text-red-500 text-sm mt-2">Password tidak valid</p>
                     <p v-if="form.ontime" class="text-red-500 text-sm mt-2">Anda hanya bisa absen pada jam 6-8 pagi.</p>
                     <p v-if="form.hari" class="text-red-500 text-sm mt-2">Anda hanya bisa absen pada hari Senin-Jum'at.</p>
-                    <p v-if="userPosition.error" class="text-red-500 text-sm mt-2">Tidak dapat mendapatkan lokasi anda.</p>
+                    <p v-if="userPosition.error" class="text-red-500 text-sm mt-2">{{ userPosition.error }}</p>
                 </div>
 
                 <p class="mb-6 text-sm">
