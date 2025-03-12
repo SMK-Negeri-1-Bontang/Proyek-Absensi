@@ -178,70 +178,80 @@ const absensi = [
         "keterangan": "terlambat",
         "tanggal": "2025-02-10",
         "waktu": "07:15:00",
-        "id_siswa": 1
+        "id_siswa": 1,
+        "hari": 1 // Monday
     },
     {
         "id": 2,
         "keterangan": "hadir",
         "tanggal": "2025-02-13",
         "waktu": "07:00:00",
-        "id_siswa": 2
+        "id_siswa": 2,
+        "hari": 4 // Thursday
     },
     {
         "id": 3,
         "keterangan": "hadir",
         "tanggal": "2025-02-25",
         "waktu": "07:00:00",
-        "id_siswa": 2
+        "id_siswa": 2,
+        "hari": 2 // Tuesday
     },
     {
         "id": 4,
         "keterangan": "hadir",
         "tanggal": "2025-02-25",
         "waktu": "07:05:00",
-        "id_siswa": 3
+        "id_siswa": 3,
+        "hari": 2 // Tuesday
     },
     {
         "id": 5,
         "keterangan": "terlambat",
         "tanggal": "2025-02-25",
         "waktu": "07:20:00",
-        "id_siswa": 4
+        "id_siswa": 4,
+        "hari": 2 // Tuesday
     },
     {
         "id": 6,
         "keterangan": "sakit",
         "tanggal": "2025-02-24",
         "waktu": "00:00:00",
-        "id_siswa": 3
+        "id_siswa": 3,
+        "hari": 1 // Monday
     },
     {
         "id": 7,
         "keterangan": "hadir",
         "tanggal": "2025-02-24",
         "waktu": "07:00:00",
-        "id_siswa": 4
+        "id_siswa": 4,
+        "hari": 1 // Monday
     },
     {
         "id": 8,
         "keterangan": "izin",
         "tanggal": "2025-02-25",
         "waktu": "00:00:00",
-        "id_siswa": 5
+        "id_siswa": 5,
+        "hari": 2 // Tuesday
     },
     {
         "id": 9,
         "keterangan": "hadir",
         "tanggal": "2025-02-24",
         "waktu": "07:10:00",
-        "id_siswa": 5
+        "id_siswa": 5,
+        "hari": 1 // Monday
     },
     {
         "id": 10,
         "keterangan": "terlambat",
         "tanggal": "2025-02-25",
         "waktu": "07:18:00",
-        "id_siswa": 6
+        "id_siswa": 6,
+        "hari": 2 // Tuesday
     }
 ];
 

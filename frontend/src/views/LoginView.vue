@@ -56,7 +56,8 @@ async function absen() {
         keterangan: '',
         tanggal: new Date().toISOString().split("T")[0],
         waktu: waktu,
-        id_siswa: userData.value.id
+        id_siswa: userData.value.id,
+        hari: new Date().getDay()
     }
 
     if (waktu >= "06:00:00" && waktu <= "07:05:00") {
