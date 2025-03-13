@@ -306,9 +306,9 @@ app.post('/login', (req, res) => {
         error.hari = true;
     }
 
-    if (!userPosition.latitude || !userPosition.longitude) {
+    if ( (!userPosition.latitude || !userPosition.longitude) && user.role == "siswa" ) {
         error.position = 'Tidak dapat mendapatkan lokasi anda.';
-    } else {
+    } else if ( user.role == "siswa" ) {
         if (
             isInsideZone(userPosition, lokasiSekolah.red) ||
             isInsideZone(userPosition, lokasiSekolah.yellow) ||
