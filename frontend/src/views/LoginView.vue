@@ -33,7 +33,6 @@ onMounted(async () => {
         (position) => {
             userPosition.latitude = position.coords.latitude;
             userPosition.longitude = position.coords.longitude;
-            console.log(`Received location: Lat ${userPosition.latitude}, Lon ${userPosition.longitude}`);
         },
         (error) => {
             console.error("Error getting location:", error.message);

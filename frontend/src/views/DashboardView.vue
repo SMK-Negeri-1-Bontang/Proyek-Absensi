@@ -52,7 +52,7 @@ onMounted(async () => {
 
   try {
     const response = await axios.get(`/api/absensi?tanggal=${today}`);
-    data.absensi = response.data.map(a => ({ ...a, isEditing: false, editedKeterangan: String(a.keterangan) }));
+    data.absensi = response.data.map(a => ({ ...a, isEditing: false, editedKeterangan: String(a.keterangan), isLoading: false }));
   } catch (error) {
     console.error(error);
   }
@@ -66,6 +66,18 @@ onMounted(async () => {
   }
 });
 
+function showLoading(id, seconds = 0.5) {
+  return new Promise((resolve) => {
+    const absensi = data.absensi.find(a => String(a.id) === String(id));
+    if (!absensi) return resolve(); // Prevent errors if absensi is undefined
+
+    absensi.isLoading = true;
+    setTimeout(() => {
+      absensi.isLoading = false;
+      resolve(); // Only resolve after timeout finishes
+    }, seconds * 1000);
+  });
+}
 function formatDate(dateString) {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("en-GB", {
@@ -83,6 +95,11 @@ function cancelEdit(id) {
   const absensi = data.absensi.find(a => String(a.id) === String(id))
   absensi.isEditing = false;
 }
+function refreshAbsensi() {
+  const tanggal = filter.tanggal;
+  filter.tanggal = 'yyyy-mm-dd';
+  filter.tanggal = tanggal;
+}
 async function saveEdit(id) {
   const absensi = data.absensi.find(a => String(a.id) === String(id));
   absensi.isEditing = false;
@@ -97,10 +114,9 @@ async function saveEdit(id) {
   }
 
   try {
-    const absensi = await axios.put('/api/absensi', updatedAbsensi);
-    const tanggal = filter.tanggal;
-    filter.tanggal = 'yyyy-mm-dd';
-    filter.tanggal = tanggal;
+    const response = await axios.put('/api/absensi', updatedAbsensi);
+    await showLoading( absensi.id );
+    refreshAbsensi();
   } catch (error) {
     console.error(error);
   }
@@ -395,21 +411,21 @@ watch(
 
       <div v-if="filter.search.focus" class="space-y-6">
         <div
-          class="bg-gray-800 p-6 rounded-lg flex justify-center items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 min-h-[188px]">
+          class="bg-gray-800 p-6 rounded-lg flex justify-center items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 min-h-[50vh]"> <!-- 188px -->
           <PulseLoader color="#570DF8" />
         </div>
       </div>
 
       <div v-else-if="!data.absensi && !filter.search.content.trim()" class="space-y-6">
         <div
-          class="bg-gray-800 p-6 rounded-lg flex justify-center items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 min-h-[188px]">
+          class="bg-gray-800 p-6 rounded-lg flex justify-center items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 min-h-[50vh]">
           <h1 class="text-6xl font-bold text-white text-center">TIDAK ADA ABSENSI</h1>
         </div>
       </div>
 
       <div v-else-if="data.absensi" class="space-y-6" v-for="absensi in data.absensi" :key="data.absensi.id">
-        <div v-if="data && data.siswa && data.jurusan && absensi"
-          class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700">
+        <div v-if="data && data.siswa && data.jurusan && absensi && !absensi.isLoading"
+          class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 h-[188px]">
           <div>
             <h1 class="text-4xl font-bold cursor-default">
               {{data.siswa.find(s => s.id == absensi.id_siswa)?.nama || "Loading..."}}
@@ -449,6 +465,11 @@ watch(
               <button @click="editKeterangan(absensi.id)" class="text-white cursor-pointer">Edit</button>
             </div>
           </div>
+        </div>
+
+        <div v-else
+          class="bg-gray-800 p-6 rounded-lg flex justify-center items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 min-h-[188px] h-[188px]">
+          <PulseLoader color="#570DF8" />
         </div>
       </div>
 

@@ -42,7 +42,7 @@ app.use(session({
     secret: '2763',  // Change this to a secure key
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, maxAge: 1000 * 60 * 60 } // Set to true if using HTTPS in production
+    cookie: { secure: false, maxAge: 3 * 60 * 60 * 1000 } // Set to true if using HTTPS in production
 }));
 
 const lokasiSekolah = {
@@ -298,8 +298,6 @@ app.post('/login', (req, res) => {
         );
     }
 
-    console.log(new Date().toLocaleDateString('en-GB', { weekday: 'long' }));
-
     if (user && user.role == "siswa" && !(waktu >= "06:00:00" && waktu <= "08:00:00")) {
         error.ontime = true;
     }
@@ -335,7 +333,7 @@ app.post('/login', (req, res) => {
     } else if (error.position) {
         return res.status(401).json({ message: 'Invalid credentials', error: error });
     } else {
-        const { userPassword, ...userSessionData } = user;
+        const { password, ...userSessionData } = user;
         req.session.user = userSessionData;
         res.json({ message: 'Login successful' });
     }
