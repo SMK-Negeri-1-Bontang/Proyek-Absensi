@@ -33,7 +33,6 @@ onMounted(async () => {
         (position) => {
             userPosition.latitude = position.coords.latitude;
             userPosition.longitude = position.coords.longitude;
-            console.log(`Received location: Lat ${userPosition.latitude}, Lon ${userPosition.longitude}`);
         },
         (error) => {
             console.error("Error getting location:", error.message);
@@ -56,7 +55,8 @@ async function absen() {
         keterangan: '',
         tanggal: new Date().toISOString().split("T")[0],
         waktu: waktu,
-        id_siswa: userData.value.id
+        id_siswa: userData.value.id,
+        hari: new Date().getDay()
     }
 
     if (waktu >= "06:00:00" && waktu <= "07:05:00") {

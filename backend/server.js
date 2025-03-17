@@ -42,7 +42,7 @@ app.use(session({
     secret: '2763',  // Change this to a secure key
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, maxAge: 1000 * 60 * 60 } // Set to true if using HTTPS in production
+    cookie: { secure: false, maxAge: 3 * 60 * 60 * 1000 } // Set to true if using HTTPS in production
 }));
 
 const lokasiSekolah = {
@@ -178,70 +178,80 @@ const absensi = [
         "keterangan": "terlambat",
         "tanggal": "2025-02-10",
         "waktu": "07:15:00",
-        "id_siswa": 1
+        "id_siswa": 1,
+        "hari": 1 // Monday
     },
     {
         "id": 2,
         "keterangan": "hadir",
         "tanggal": "2025-02-13",
         "waktu": "07:00:00",
-        "id_siswa": 2
+        "id_siswa": 2,
+        "hari": 4 // Thursday
     },
     {
         "id": 3,
         "keterangan": "hadir",
         "tanggal": "2025-02-25",
         "waktu": "07:00:00",
-        "id_siswa": 2
+        "id_siswa": 2,
+        "hari": 2 // Tuesday
     },
     {
         "id": 4,
         "keterangan": "hadir",
         "tanggal": "2025-02-25",
         "waktu": "07:05:00",
-        "id_siswa": 3
+        "id_siswa": 3,
+        "hari": 2 // Tuesday
     },
     {
         "id": 5,
         "keterangan": "terlambat",
         "tanggal": "2025-02-25",
         "waktu": "07:20:00",
-        "id_siswa": 4
+        "id_siswa": 4,
+        "hari": 2 // Tuesday
     },
     {
         "id": 6,
         "keterangan": "sakit",
         "tanggal": "2025-02-24",
         "waktu": "00:00:00",
-        "id_siswa": 3
+        "id_siswa": 3,
+        "hari": 1 // Monday
     },
     {
         "id": 7,
         "keterangan": "hadir",
         "tanggal": "2025-02-24",
         "waktu": "07:00:00",
-        "id_siswa": 4
+        "id_siswa": 4,
+        "hari": 1 // Monday
     },
     {
         "id": 8,
         "keterangan": "izin",
         "tanggal": "2025-02-25",
         "waktu": "00:00:00",
-        "id_siswa": 5
+        "id_siswa": 5,
+        "hari": 2 // Tuesday
     },
     {
         "id": 9,
         "keterangan": "hadir",
         "tanggal": "2025-02-24",
         "waktu": "07:10:00",
-        "id_siswa": 5
+        "id_siswa": 5,
+        "hari": 1 // Monday
     },
     {
         "id": 10,
         "keterangan": "terlambat",
         "tanggal": "2025-02-25",
         "waktu": "07:18:00",
-        "id_siswa": 6
+        "id_siswa": 6,
+        "hari": 2 // Tuesday
     }
 ];
 
@@ -288,8 +298,6 @@ app.post('/login', (req, res) => {
         );
     }
 
-    console.log(new Date().toLocaleDateString('en-GB', { weekday: 'long' }));
-
     if (user && user.role == "siswa" && !(waktu >= "06:00:00" && waktu <= "08:00:00")) {
         error.ontime = true;
     }
@@ -298,9 +306,9 @@ app.post('/login', (req, res) => {
         error.hari = true;
     }
 
-    if (!userPosition.latitude || !userPosition.longitude) {
+    if ( (!userPosition.latitude || !userPosition.longitude) && user.role == "siswa" ) {
         error.position = 'Tidak dapat mendapatkan lokasi anda.';
-    } else {
+    } else if ( user.role == "siswa" ) {
         if (
             isInsideZone(userPosition, lokasiSekolah.red) ||
             isInsideZone(userPosition, lokasiSekolah.yellow) ||
@@ -325,7 +333,7 @@ app.post('/login', (req, res) => {
     } else if (error.position) {
         return res.status(401).json({ message: 'Invalid credentials', error: error });
     } else {
-        const { userPassword, ...userSessionData } = user;
+        const { password, ...userSessionData } = user;
         req.session.user = userSessionData;
         res.json({ message: 'Login successful' });
     }

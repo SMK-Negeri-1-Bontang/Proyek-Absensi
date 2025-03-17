@@ -1,6 +1,7 @@
 <script setup>
 import axios from 'axios';
 import { onMounted, reactive, watch, ref } from 'vue';
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 import router from '@/router';
 
 axios.defaults.withCredentials = true;
@@ -15,8 +16,12 @@ const statusColors = reactive({
   alpha: "text-[#FF1A1A]"
 });
 const filter = reactive({
-  search: '',
+  search: { content: '', focus: false },
   kelas: [1, 2, 3, 4],
+  hari: {
+    content: [1, 2, 3, 4, 5],
+    active: false,
+  },
   jurusan: 0,
   subdivisi: '',
   keterangan: '',
@@ -47,7 +52,7 @@ onMounted(async () => {
 
   try {
     const response = await axios.get(`/api/absensi?tanggal=${today}`);
-    data.absensi = response.data.map(a => ({ ...a, isEditing: false, editedKeterangan: String(a.keterangan) }));
+    data.absensi = response.data.map(a => ({ ...a, isEditing: false, editedKeterangan: String(a.keterangan), isLoading: false }));
   } catch (error) {
     console.error(error);
   }
@@ -61,6 +66,18 @@ onMounted(async () => {
   }
 });
 
+function showLoading(id, seconds = 0.5) {
+  return new Promise((resolve) => {
+    const absensi = data.absensi.find(a => String(a.id) === String(id));
+    if (!absensi) return resolve(); // Prevent errors if absensi is undefined
+
+    absensi.isLoading = true;
+    setTimeout(() => {
+      absensi.isLoading = false;
+      resolve(); // Only resolve after timeout finishes
+    }, seconds * 1000);
+  });
+}
 function formatDate(dateString) {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("en-GB", {
@@ -78,6 +95,11 @@ function cancelEdit(id) {
   const absensi = data.absensi.find(a => String(a.id) === String(id))
   absensi.isEditing = false;
 }
+function refreshAbsensi() {
+  const tanggal = filter.tanggal;
+  filter.tanggal = 'yyyy-mm-dd';
+  filter.tanggal = tanggal;
+}
 async function saveEdit(id) {
   const absensi = data.absensi.find(a => String(a.id) === String(id));
   absensi.isEditing = false;
@@ -92,10 +114,9 @@ async function saveEdit(id) {
   }
 
   try {
-    const absensi = await axios.put('/api/absensi', updatedAbsensi);
-    const tanggal = filter.tanggal;
-    filter.tanggal = 'yyyy-mm-dd';
-    filter.tanggal = tanggal;
+    const response = await axios.put('/api/absensi', updatedAbsensi);
+    await showLoading( absensi.id );
+    refreshAbsensi();
   } catch (error) {
     console.error(error);
   }
@@ -149,23 +170,39 @@ watch(
       data.absensi = data.absensi.filter(absensi => idSiswa.includes(absensi.id_siswa));
     }
 
-    if (filter.kelas) {
+    if (filter.kelas && data.absensi) {
       const filteredSiswa = data.siswa.filter(siswa => filter.kelas.includes(siswa.kelas));
       const idSiswa = filteredSiswa.map(siswa => Number(siswa.id));
       data.absensi = data.absensi.filter(absensi => idSiswa.includes(absensi.id_siswa));
     }
 
-    if (filter.search.trim()) {
+    if (filter.search.content.trim()) {
       const filteredSiswa = data.siswa.filter(siswa =>
-        siswa.nama.toLowerCase().includes(filter.search.toLowerCase()) ||
-        siswa.nis.includes(filter.search) ||
-        data.jurusan.find(jurusan => Number(jurusan.id) === Number(siswa.id_jurusan)).nama.toLowerCase().includes(filter.search.toLowerCase())
+        siswa.nama.toLowerCase().includes(filter.search.content.trim().toLowerCase()) ||
+        siswa.nis.includes(filter.search.content.trim()) ||
+        data.jurusan.find(jurusan => Number(jurusan.id) === Number(siswa.id_jurusan)).nama.toLowerCase().includes(filter.search.content.trim().toLowerCase())
       );
 
-      const idSiswa = filteredSiswa.map(siswa => Number(siswa.id));
-      data.absensi = data.absensi.filter(absensi => idSiswa.includes(absensi.id_siswa));
+      console.log(filteredSiswa, filteredSiswa.length);
+
+      if (filteredSiswa.length === 1) {
+        console.log(true);
+        console.log(`?id_siswa=${filteredSiswa[0].id}`);
+        data.absensi = await fetchAbsensi(`?id_siswa=${filteredSiswa[0].id}`);
+        filter.hari.active = true;
+      } else {
+        const idSiswa = filteredSiswa.map(siswa => Number(siswa.id));
+        data.absensi = data.absensi.filter(absensi => idSiswa.includes(absensi.id_siswa));
+      }
+
+      if (filter.hari.active) {
+        data.absensi = data.absensi.filter(absensi => filter.hari.content.includes(absensi.hari));
+      }
+    } else {
+      filter.hari.active = false;
     }
 
+    console.log(new Date().getDay());
   }
 );
 </script>
@@ -190,8 +227,30 @@ watch(
 
           <div>
             <label for="search" class="block mb-2 font-medium text-xl">Search:</label>
-            <input type="text" id="search" placeholder="Type here" name="search" v-model="filter.search"
+            <input type="text" id="search" placeholder="Type here" name="search" v-model="filter.search.content"
+              @focus="filter.search.focus = true" @blur="filter.search.focus = false"
               class="input input-bordered input-primary w-full max-w-xs border-4 bg-gray-800" />
+
+
+            <div class="flex flex-wrap gap-4 mt-4" v-if="filter.hari.active">
+              <div class="form-control" v-for="(day, index) in [
+                { label: 'S', value: 1 },
+                { label: 'S', value: 2 },
+                { label: 'R', value: 3 },
+                { label: 'K', value: 4 },
+                { label: 'J', value: 5 }
+              ]" :key="index">
+                <label class="label cursor-pointer">
+                  <span class="label-text">{{ day.label }}</span>
+                  <input type="checkbox" v-model="filter.hari.content" :value="day.value"
+                    class="checkbox checkbox-primary" />
+                </label>
+              </div>
+            </div>
+
+
+
+
           </div>
 
           <div>
@@ -348,9 +407,25 @@ watch(
 
       </div>
 
-      <div class="space-y-6" v-for="absensi in data.absensi" :key="data.absensi.id">
-        <div v-if="data && data.siswa && data.jurusan && absensi"
-          class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700">
+
+
+      <div v-if="filter.search.focus" class="space-y-6">
+        <div
+          class="bg-gray-800 p-6 rounded-lg flex justify-center items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 min-h-[50vh]"> <!-- 188px -->
+          <PulseLoader color="#570DF8" />
+        </div>
+      </div>
+
+      <div v-else-if="!data.absensi && !filter.search.content.trim()" class="space-y-6">
+        <div
+          class="bg-gray-800 p-6 rounded-lg flex justify-center items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 min-h-[50vh]">
+          <h1 class="text-6xl font-bold text-white text-center">TIDAK ADA ABSENSI</h1>
+        </div>
+      </div>
+
+      <div v-else-if="data.absensi" class="space-y-6" v-for="absensi in data.absensi" :key="data.absensi.id">
+        <div v-if="data && data.siswa && data.jurusan && absensi && !absensi.isLoading"
+          class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 h-[188px]">
           <div>
             <h1 class="text-4xl font-bold cursor-default">
               {{data.siswa.find(s => s.id == absensi.id_siswa)?.nama || "Loading..."}}
@@ -391,7 +466,14 @@ watch(
             </div>
           </div>
         </div>
+
+        <div v-else
+          class="bg-gray-800 p-6 rounded-lg flex justify-center items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 min-h-[188px] h-[188px]">
+          <PulseLoader color="#570DF8" />
+        </div>
       </div>
+
+
 
     </div>
   </div>
