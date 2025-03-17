@@ -100,7 +100,7 @@ const signup = async () => {
                     <input
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
                         type="password" placeholder="Masukkan kata sandi" id="password" v-model="form.password.content">
-                    <p v-if="form.password.error" class="text-red-500 text-sm mt-2">Password tidak valid</p>
+                    <p v-if="form.password.error" class="text-red-500 text-sm mt-2">Password minimal 8 karakter.</p>
                 </div>
 
                 <div class="mb-6">

@@ -6,6 +6,7 @@ import { RouterLink } from 'vue-router';
 
 axios.defaults.withCredentials = true;
 
+const geolocationError = ref('');
 const users = ref([]);
 const sessionData = ref([]);
 const userData = ref([]);
@@ -33,9 +34,11 @@ onMounted(async () => {
         (position) => {
             userPosition.latitude = position.coords.latitude;
             userPosition.longitude = position.coords.longitude;
+            geolocationError.value = '';
         },
         (error) => {
             console.error("Error getting location:", error.message);
+            geolocationError.value = "Error getting location: " + error.message;
         }
     );
 });
@@ -152,6 +155,7 @@ async function login() {
                     <p v-if="form.ontime" class="text-red-500 text-sm mt-2">Anda hanya bisa absen pada jam 6-8 pagi.</p>
                     <p v-if="form.hari" class="text-red-500 text-sm mt-2">Anda hanya bisa absen pada hari Senin-Jum'at.</p>
                     <p v-if="userPosition.error" class="text-red-500 text-sm mt-2">{{ userPosition.error }}</p>
+                    <p v-if="geolocationError" class="text-red-500 text-sm mt-2">{{ geolocationError }}</p>
                 </div>
 
                 <p class="mb-6 text-sm">

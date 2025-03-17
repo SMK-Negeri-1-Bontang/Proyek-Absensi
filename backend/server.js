@@ -272,7 +272,7 @@ const guru = [
 
 app.post('/login', (req, res) => {
     const { nama, password } = req.body;
-    const userPosition = req.body.userPosition;
+    const userPosition = req.body.userPosition || { latitude: null, longitude: null };
     const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0]; // PLACEHOLDER FOR TESTING ( REPLACE )
     const hari = "Monday" || new Date().toLocaleDateString('en-GB', { weekday: 'long' }); // PLACEHOLDER FOR TESTING ( REPLACE )
     const users = [...siswa, ...guru];
@@ -285,8 +285,10 @@ app.post('/login', (req, res) => {
         position: ''
     }
 
-    userPosition.latitude = lokasiSekolah.red[0].latitude + 0.0001; // PLACEHOLDER FOR TESTING ( DELETE )
-    userPosition.longitude = lokasiSekolah.red[0].longitude + 0.0001; // PLACEHOLDER FOR TESTING ( DELETE )
+    if (user.position) {
+        userPosition.latitude = lokasiSekolah.red[0].latitude + 0.0001; // PLACEHOLDER FOR TESTING ( DELETE )
+        userPosition.longitude = lokasiSekolah.red[0].longitude + 0.0001; // PLACEHOLDER FOR TESTING ( DELETE )
+    }
 
     function isInsideZone(user, zone) {
         const [bottomLeft, topRight] = zone;
@@ -298,17 +300,19 @@ app.post('/login', (req, res) => {
         );
     }
 
-    if (user && user.role == "siswa" && !(waktu >= "06:00:00" && waktu <= "08:00:00")) {
-        error.ontime = true;
+    if (user) {
+        if (user.role == "siswa" && !(waktu >= "06:00:00" && waktu <= "08:00:00")) {
+            error.ontime = true;
+        }
     }
 
     if (["Saturday", "Sunday"].includes(hari)) {
         error.hari = true;
     }
 
-    if ( (!userPosition.latitude || !userPosition.longitude) && user.role == "siswa" ) {
+    if ((!userPosition.latitude || !userPosition.longitude) && user.role == "siswa") {
         error.position = 'Tidak dapat mendapatkan lokasi anda.';
-    } else if ( user.role == "siswa" ) {
+    } else if (user.role == "siswa") {
         if (
             isInsideZone(userPosition, lokasiSekolah.red) ||
             isInsideZone(userPosition, lokasiSekolah.yellow) ||
