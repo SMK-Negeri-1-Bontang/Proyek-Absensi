@@ -231,7 +231,7 @@ watch(
         <div class="flex justify-between items-center m-6">
           <div class="flex items-center">
             <img class="h-16 mr-8" src="@/components/images/Logo.png"></img>
-            <h1 class="text-[45px] font-bold cursor-default paytone-one-regular">
+            <h1 class="text-[45px] font-bold">
               {{ userData.nama || '' }}</h1>
           </div>
           <div>

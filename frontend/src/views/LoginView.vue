@@ -144,7 +144,7 @@ async function login() {
     <div
         class="flex items-center justify-center h-screen bg-[image:url('/src/components/images/kde_mountain.png')] bg-cover">
         <div class="w-full max-w-md bg-gray-800 p-8 pt-16 rounded-lg shadow-lg">
-            <img src="/src/components/images/Logo.png" alt="logo" class="h-16 mx-auto">
+            <img src="/src/components/images/Logo.png" alt="logo" class="h-16 mx-auto mb-2">
             <!-- mx-auto mungkin merusakkan sesuatu-->
             <h1 class="text-2xl font-bold text-center mb-6 text-white">Log in</h1>
 
