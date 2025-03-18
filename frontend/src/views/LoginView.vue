@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import router from '@/router';
+import bcrypt from 'bcryptjs';
 import axios from 'axios';
 import { RouterLink } from 'vue-router';
 
@@ -43,6 +44,15 @@ onMounted(async () => {
     );
 });
 
+function getCurrentDate() {
+    const formattedDate = new Date().toLocaleDateString("id-ID", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    }).split("/").reverse().join("-");
+
+    return formattedDate;
+}
 async function getSessionData() {
     try {
         const response = await axios.get("/api/session");
@@ -53,14 +63,15 @@ async function getSessionData() {
     }
 }
 async function absen() {
+    const now = new Date();
     const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0]; // PLACEHOLDER FOR TESTING ( REPLACE )
     const absenData = {
         keterangan: '',
-        tanggal: new Date().toISOString().split("T")[0],
+        tanggal: getCurrentDate(),
         waktu: waktu,
         id_siswa: userData.value.id,
-        hari: new Date().getDay()
-    }
+        hari: now.getDay()
+    };
 
     if (waktu >= "06:00:00" && waktu <= "07:05:00") {
         absenData.keterangan = "hadir";
@@ -69,9 +80,10 @@ async function absen() {
     }
 
     try {
-        const absensi = await axios.post('/api/absensi', absenData);
+        const response = await axios.post('/api/absensi', absenData);
+        console.log("Response:", response.data);
     } catch (error) {
-        console.error(error);
+        console.error("Error:", error.response ? error.response.data : error.message);
     }
 }
 async function login() {
@@ -89,7 +101,7 @@ async function login() {
     };
 
     try {
-        const user = users.value.find(u => u.nama === formData.nama && u.password === formData.password);
+        const user = users.value.find(u => u.nama === formData.nama && bcrypt.compare(formData.password, u.password));
         const response = await axios.post('/api/login', formData);
 
         if (user.role === "siswa" && (waktu >= "06:00:00" && waktu <= "08:00:00")) {
@@ -143,7 +155,7 @@ async function login() {
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
                         type="text" placeholder="Masukkan nama" id="nama" name="nama" v-model="form.nama.content"
                         required>
-                    <p v-if="form.nama.error" class="text-red-500 text-sm mt-2">Nama tidak valid</p>
+                    <p v-if="form.nama.error" class="text-red-500 text-sm mt-2">Nama tidak valid.</p>
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-400 text-sm font-bold mb-2" for="password">Kata Sandi</label>
@@ -151,9 +163,10 @@ async function login() {
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
                         type="password" id="password" name="password" placeholder="Masukkan kata sandi"
                         v-model="form.password.content" required>
-                    <p v-if="form.password.error" class="text-red-500 text-sm mt-2">Password tidak valid</p>
+                    <p v-if="form.password.error" class="text-red-500 text-sm mt-2">Password tidak valid.</p>
                     <p v-if="form.ontime" class="text-red-500 text-sm mt-2">Anda hanya bisa absen pada jam 6-8 pagi.</p>
-                    <p v-if="form.hari" class="text-red-500 text-sm mt-2">Anda hanya bisa absen pada hari Senin-Jum'at.</p>
+                    <p v-if="form.hari" class="text-red-500 text-sm mt-2">Anda hanya bisa absen pada hari Senin-Jum'at.
+                    </p>
                     <p v-if="userPosition.error" class="text-red-500 text-sm mt-2">{{ userPosition.error }}</p>
                     <p v-if="geolocationError" class="text-red-500 text-sm mt-2">{{ geolocationError }}</p>
                 </div>

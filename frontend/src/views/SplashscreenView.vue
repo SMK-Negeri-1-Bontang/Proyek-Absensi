@@ -16,7 +16,7 @@ const statusColors = reactive({
   terlambat: "text-[#FF1A1A]",
   menunggu: "text-white",
   izin: "text-[#FFD700]",
-  alpha: "text-[#FF1A1A]"
+  alpha: "text-[#570DF8]"
 });
 
 onMounted(async () => {
@@ -36,6 +36,16 @@ onMounted(async () => {
   getAbsenData();
 });
 
+function getCurrentDate() {
+    const formattedDate =  new Date().toLocaleDateString("id-ID", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    }).split("/").reverse().join("-");
+
+    return formattedDate;
+}
+
 async function logout() {
   try {
     await axios.post("/api/logout");
@@ -47,7 +57,7 @@ async function logout() {
 
 async function getAbsenData() {
   try {
-    const response = await axios.get(`api/absensi?tanggal=${new Date().toISOString().split("T")[0]}&id_siswa=${userData.value.id}`);
+    const response = await axios.get(`api/absensi?tanggal=${getCurrentDate()}&id_siswa=${userData.value.id}`);
     absenData.value = response.data[0];
   } catch (error) {
     console.error(error);
@@ -74,7 +84,7 @@ async function getAbsenData() {
         :class="`${statusColors[absenData.keterangan]} text-6xl font-bold`">
         {{ absenData.keterangan.toUpperCase() }}
       </h1>
-      <button class="text-white cursor-pointer" @click="logout">Log out</button>
+      <button class="text-white cursor-pointer" @click="logout">Log out</button> <!--  PLACEHOLDER FOR TESTING ( ERASE ) -->
     </div>
   </div>
 </template>

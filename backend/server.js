@@ -1,33 +1,57 @@
 const express = require('express');
 const session = require('express-session');
 const { v4: uuidv4 } = require('uuid');
+const { dbAll, dbGet, dbRun, dbDelete } = require("./dbUtils"); // Import the functions
 const cors = require('cors');
 const cron = require("node-cron");
+const bcrypt = require("bcrypt");
 const PORT = process.env.PORT || 5000;
 
 const app = express();
+const saltRounds = 10;
 
 console.log("Server is starting...");
 
-cron.schedule("5 8 * * *", () => {
-    console.log("Mengecek siswa yang belum absen...");
+function getCurrentDate() {
+    const formattedDate = new Date().toLocaleDateString("id-ID", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    }).split("/").reverse().join("-");
 
-    const today = new Date().toISOString().split("T")[0];
-    const absentStudents = siswa.filter(student =>
-        !absensi.some(record => record.id_siswa === student.id && record.tanggal === today)
-    );
+    return formattedDate;
+}
 
-    absentStudents.forEach(student => {
-        absensi.push({
-            id: uuidv4(),
-            id_siswa: student.id,
-            tanggal: today,
-            waktu: "08:05:00",
-            keterangan: "alpha"
-        });
-    });
+cron.schedule("5 8 * * *", async () => {
+    try {
+        const today = getCurrentDate();
+        const dayOfWeek = today.getDay();
 
-    console.log(`Mengabsen ${absentStudents.length} siswa sebagai "alpha"`);
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+            console.log("Hari ini adalah weekend. Cron job tidak berjalan.");
+            return;
+        }
+
+        console.log("Mengecek siswa yang belum absen...");
+
+        const siswa = await dbAll("SELECT * FROM siswa");
+        const absensi = await dbAll("SELECT id_siswa, tanggal FROM absensi WHERE tanggal = ?", [today]);
+
+        const absentStudents = siswa.filter(student =>
+            !absensi.some(record => record.id_siswa === student.id && record.tanggal === today)
+        );
+
+        for (const student of absentStudents) {
+            await dbRun(
+                "INSERT INTO absensi (id, id_siswa, tanggal, waktu, keterangan, hari) VALUES (?, ?, ?, ?, ?, ?)",
+                [uuidv4(), student.id, today, "08:05:00", "alpha", new Date().getDay()]
+            );
+        }
+
+        console.log(`Mengabsen ${absentStudents.length} siswa sebagai "alpha"`);
+    } catch (error) {
+        console.error("Error running cron job:", error);
+    }
 }, {
     timezone: "Asia/Makassar"
 });
@@ -60,291 +84,91 @@ const lokasiSekolah = {
     ]
 };
 
-const jurusan = [
-    {
-        "id": 1,
-        "nama": "Kimia Analis"
-    },
-    {
-        "id": 2,
-        "nama": "Kimia Industri"
-    },
-    {
-        "id": 3,
-        "nama": "Otomasi Industri"
-    },
-    {
-        "id": 4,
-        "nama": "Pengembangan Perangkat Lunak dan Gim"
-    },
-    {
-        "id": 5,
-        "nama": "Tata Pendinginan Udara"
-    },
-    {
-        "id": 6,
-        "nama": "Teknik Listrik"
-    },
-    {
-        "id": 7,
-        "nama": "Teknik Kendaraan Ringan"
-    },
-    {
-        "id": 8,
-        "nama": "Teknik Pengelasan"
-    },
-    {
-        "id": 9,
-        "nama": "Farmasi"
-    },
-    {
-        "id": 10,
-        "nama": "Teknik Mesin"
-    }
-];
+app.post('/login', async (req, res) => {
+    try {
+        const { nama, password, userPosition } = req.body;
+        const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0]; // PLACEHOLDER FOR TESTING ( REPLACE )
+        const hari = "Monday" || new Date().toLocaleDateString('en-GB', { weekday: 'long' }); // PLACEHOLDER FOR TESTING ( REPLACE )
+        const siswa = await dbAll("SELECT * FROM siswa");
+        const guru = await dbAll("SELECT * FROM guru");
+        const users = [...guru, ...siswa];
+        const user = users.find(u => u.nama.trim() === nama.trim());
 
-const siswa = [
-    {
-        "id": 1,
-        "nama": "Valen Pratama Sahedi",
-        "nis": "230501035",
-        "kelas": 2,
-        "absen": 36,
-        "subdivisi_jurusan": "tidak ada",
-        "id_jurusan": 4,
-        "password": "12345",
-        "role": "siswa"
-    },
-    {
-        "id": 2,
-        "nama": "Tristan Argyadeva Ravindra Maulany",
-        "nis": "230501034",
-        "kelas": 2,
-        "absen": 35,
-        "subdivisi_jurusan": "tidak ada",
-        "id_jurusan": 4,
-        "password": "12345",
-        "role": "siswa"
-    },
-    {
-        "id": 3,
-        "nama": "Alya Putri Ramadhan",
-        "nis": "230501100",
-        "kelas": 2,
-        "absen": 10,
-        "subdivisi_jurusan": "A",
-        "id_jurusan": 1,
-        "password": "12345",
-        "role": "siswa"
-    },
-    {
-        "id": 4,
-        "nama": "Bima Surya",
-        "nis": "230501101",
-        "kelas": 3,
-        "absen": 11,
-        "subdivisi_jurusan": "B",
-        "id_jurusan": 1,
-        "password": "12345",
-        "role": "siswa"
-    },
-    {
-        "id": 5,
-        "nama": "Citra Anggraini",
-        "nis": "230501102",
-        "kelas": 4,
-        "absen": 12,
-        "subdivisi_jurusan": "A",
-        "id_jurusan": 2,
-        "password": "12345",
-        "role": "siswa"
-    },
-    {
-        "id": 6,
-        "nama": "Damar Yusuf",
-        "nis": "230501103",
-        "kelas": 1,
-        "absen": 13,
-        "subdivisi_jurusan": "A",
-        "id_jurusan": 2,
-        "password": "12345",
-        "role": "siswa"
-    }
-];
+        const error = {
+            nama: false,
+            password: false,
+            ontime: false,
+            hari: false,
+            position: ''
+        };
 
-const absensi = [
-    {
-        "id": 1,
-        "keterangan": "terlambat",
-        "tanggal": "2025-02-10",
-        "waktu": "07:15:00",
-        "id_siswa": 1,
-        "hari": 1 // Monday
-    },
-    {
-        "id": 2,
-        "keterangan": "hadir",
-        "tanggal": "2025-02-13",
-        "waktu": "07:00:00",
-        "id_siswa": 2,
-        "hari": 4 // Thursday
-    },
-    {
-        "id": 3,
-        "keterangan": "hadir",
-        "tanggal": "2025-02-25",
-        "waktu": "07:00:00",
-        "id_siswa": 2,
-        "hari": 2 // Tuesday
-    },
-    {
-        "id": 4,
-        "keterangan": "hadir",
-        "tanggal": "2025-02-25",
-        "waktu": "07:05:00",
-        "id_siswa": 3,
-        "hari": 2 // Tuesday
-    },
-    {
-        "id": 5,
-        "keterangan": "terlambat",
-        "tanggal": "2025-02-25",
-        "waktu": "07:20:00",
-        "id_siswa": 4,
-        "hari": 2 // Tuesday
-    },
-    {
-        "id": 6,
-        "keterangan": "sakit",
-        "tanggal": "2025-02-24",
-        "waktu": "00:00:00",
-        "id_siswa": 3,
-        "hari": 1 // Monday
-    },
-    {
-        "id": 7,
-        "keterangan": "hadir",
-        "tanggal": "2025-02-24",
-        "waktu": "07:00:00",
-        "id_siswa": 4,
-        "hari": 1 // Monday
-    },
-    {
-        "id": 8,
-        "keterangan": "izin",
-        "tanggal": "2025-02-25",
-        "waktu": "00:00:00",
-        "id_siswa": 5,
-        "hari": 2 // Tuesday
-    },
-    {
-        "id": 9,
-        "keterangan": "hadir",
-        "tanggal": "2025-02-24",
-        "waktu": "07:10:00",
-        "id_siswa": 5,
-        "hari": 1 // Monday
-    },
-    {
-        "id": 10,
-        "keterangan": "terlambat",
-        "tanggal": "2025-02-25",
-        "waktu": "07:18:00",
-        "id_siswa": 6,
-        "hari": 2 // Tuesday
-    }
-];
+        if (!user) {
+            error.nama = true;
+            return res.status(401).json({ message: 'Invalid credentials', error });
+        }
 
-const guru = [
-    {
-        "id": 1,
-        "nama": "Pak Wahyu",
-        "password": "12345",
-        "role": "guru"
-    },
-    {
-        "id": 2,
-        "nama": "Bu Damaris",
-        "password": "12345",
-        "role": "guru"
-    }
-];
-
-app.post('/login', (req, res) => {
-    const { nama, password } = req.body;
-    const userPosition = req.body.userPosition || { latitude: null, longitude: null };
-    const waktu = "07:00:00" || new Date(`1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, "")}`).toTimeString().split(" ")[0]; // PLACEHOLDER FOR TESTING ( REPLACE )
-    const hari = "Monday" || new Date().toLocaleDateString('en-GB', { weekday: 'long' }); // PLACEHOLDER FOR TESTING ( REPLACE )
-    const users = [...siswa, ...guru];
-    const user = users.find(u => u.nama === nama);
-    const error = {
-        nama: false,
-        password: false,
-        ontime: false,
-        hari: false,
-        position: ''
-    }
-
-    if (user.position) {
+        // Simulate user location (for testing)
         userPosition.latitude = lokasiSekolah.red[0].latitude + 0.0001; // PLACEHOLDER FOR TESTING ( DELETE )
         userPosition.longitude = lokasiSekolah.red[0].longitude + 0.0001; // PLACEHOLDER FOR TESTING ( DELETE )
-    }
 
-    function isInsideZone(user, zone) {
-        const [bottomLeft, topRight] = zone;
-        return (
-            user.latitude >= bottomLeft.latitude &&
-            user.latitude <= topRight.latitude &&
-            user.longitude >= bottomLeft.longitude &&
-            user.longitude <= topRight.longitude
-        );
-    }
+        function isInsideZone(user, zone) {
+            const [bottomLeft, topRight] = zone;
+            return (
+                user.latitude >= bottomLeft.latitude &&
+                user.latitude <= topRight.latitude &&
+                user.longitude >= bottomLeft.longitude &&
+                user.longitude <= topRight.longitude
+            );
+        }
 
-    if (user) {
-        if (user.role == "siswa" && !(waktu >= "06:00:00" && waktu <= "08:00:00")) {
+        if (user.role === "siswa" && !(waktu >= "06:00:00" && waktu <= "08:00:00")) {
             error.ontime = true;
         }
-    }
 
-    if (["Saturday", "Sunday"].includes(hari)) {
-        error.hari = true;
-    }
-
-    if ((!userPosition.latitude || !userPosition.longitude) && user.role == "siswa") {
-        error.position = 'Tidak dapat mendapatkan lokasi anda.';
-    } else if (user.role == "siswa") {
-        if (
-            isInsideZone(userPosition, lokasiSekolah.red) ||
-            isInsideZone(userPosition, lokasiSekolah.yellow) ||
-            isInsideZone(userPosition, lokasiSekolah.blue)
-        ) {
-            console.log(`Received location: Lat ${userPosition.latitude}, Lon ${userPosition.longitude}`);
-        } else {
-            error.position = 'Anda tidak di sekolah.';
+        if (["Saturday", "Sunday"].includes(hari) && user.role === "siswa") {
+            error.hari = true;
         }
-    }
 
-    if (!user) {
-        error.nama = true;
-        return res.status(401).json({ message: 'Invalid credentials', error: error });
-    } else if (String(user.password) !== String(password)) {
-        error.password = true;
-        return res.status(401).json({ message: 'Invalid credentials', error: error });
-    } else if (error.ontime) {
-        return res.status(401).json({ message: 'Invalid credentials', error: error });
-    } else if (error.hari) {
-        return res.status(401).json({ message: 'Invalid credentials', error: error });
-    } else if (error.position) {
-        return res.status(401).json({ message: 'Invalid credentials', error: error });
-    } else {
-        const { password, ...userSessionData } = user;
+        if ((!userPosition.latitude || !userPosition.longitude) && user.role === "siswa") {
+            error.position = 'Tidak dapat mendapatkan lokasi anda.';
+        } else if (user.role === "siswa") {
+            if (
+                isInsideZone(userPosition, lokasiSekolah.red) ||
+                isInsideZone(userPosition, lokasiSekolah.yellow) ||
+                isInsideZone(userPosition, lokasiSekolah.blue)
+            ) {
+                console.log(`Received location: Lat ${userPosition.latitude}, Lon ${userPosition.longitude}`);
+            } else {
+                error.position = 'Anda tidak di sekolah.';
+            }
+        }
+
+        if ( !(await bcrypt.compare( password, user.password ) ) ) {
+            error.password = true;
+        }
+
+        if (error.nama || error.password || error.ontime || error.hari || error.position) {
+            return res.status(401).json({ message: 'Invalid credentials', error });
+        }
+
+        const { password: _, ...userSessionData } = user;
         req.session.user = userSessionData;
         res.json({ message: 'Login successful' });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({ message: "Internal server error", error: error.message });
     }
 });
 
-app.get('/users', (req, res) => {
-    res.json([...siswa, ...guru]);
+app.get('/users', async (req, res) => {
+    try {
+        const siswa = await dbAll("SELECT * FROM siswa");
+        const guru = await dbAll("SELECT * FROM guru");
+        res.json([...siswa, ...guru]);
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 });
 
 app.post('/logout', (req, res) => {
@@ -353,7 +177,7 @@ app.post('/logout', (req, res) => {
     });
 });
 
-app.get('/session', (req, res) => {
+app.get('/session', async (req, res) => {
     if (req.session.user) {
         res.json({ loggedIn: true, user: req.session.user });
     } else {
@@ -372,102 +196,159 @@ app.get('/profile', (req, res) => {
 });
 */
 
-app.get('/jurusan', (req, res) => {
-    res.json(jurusan);
+app.get('/jurusan', async (req, res) => {
+    try {
+        const jurusan = await dbAll("SELECT * FROM jurusan");
+        res.json(jurusan);
+    } catch (error) {
+        console.error("Error fetching jurusan:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 });
 
-app.get('/siswa', (req, res) => {
-    res.json(siswa);
+app.get('/siswa', async (req, res) => {
+    try {
+        const siswa = await dbAll("SELECT * FROM siswa");
+        res.json(siswa);
+    } catch (error) {
+        console.error("Error fetching siswa:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 });
 
-app.post('/siswa', (req, res) => {
-    const newUser = req.body;
+app.post('/siswa', async (req, res) => {
+    try {
+        const { nama, nis, kelas, absen, subdivisi, id_jurusan, password, confirmPassword, role } = req.body;
+        const id = uuidv4();
 
-    const inputErrors = {
-        nama: false,
-        nis: false,
-        password: false,
-        confirmPassword: false,
-        kelas: false,
-        subdivisi: false,
-        jurusan: false
-    };
+        const inputErrors = {
+            nama: false,
+            nis: false,
+            password: false,
+            confirmPassword: false,
+            kelas: false,
+            subdivisi: false,
+            jurusan: false
+        };
 
-    const namaUsers = [...siswa, ...guru].map(user => user.nama);
-    inputErrors.nama = namaUsers.includes(newUser.nama) || newUser.nama.length > 100;
+        const siswa = await dbAll("SELECT * FROM siswa");
+        const guru = await dbAll("SELECT * FROM guru");
+        const namaUsers = [...siswa, ...guru].map(user => user.nama);
+        inputErrors.nama = namaUsers.includes(nama) || nama.length > 100;
 
-    const nisUsers = siswa.map(user => user.nis);
-    const nisNumber = Number(newUser.nis);
-    inputErrors.nis = !newUser.nis.trim() || isNaN(nisNumber) || newUser.nis.length > 100 || nisUsers.includes(newUser.nis);
+        const nisUsers = siswa.map(user => user.nis);
+        const nisNumber = Number(nis);
+        inputErrors.nis = !nis.trim() || isNaN(nisNumber) || nis.length > 100 || nisUsers.includes(nis);
 
-    inputErrors.password = newUser.password.length < 8;
+        inputErrors.password = password.length < 8;
 
-    inputErrors.confirmPassword = newUser.confirmPassword !== newUser.password;
+        inputErrors.confirmPassword = confirmPassword !== password;
 
-    inputErrors.kelas = !newUser.kelas;
+        inputErrors.kelas = !kelas;
 
-    inputErrors.jurusan = !newUser.id_jurusan;
+        inputErrors.jurusan = !id_jurusan;
 
-    inputErrors.subdivisi = (newUser.jurusan === 1 || newUser.jurusan === 2) && !newUser.subdivisi.trim();
+        inputErrors.subdivisi = (id_jurusan === 1 || id_jurusan === 2) && !subdivisi.trim();
 
-    if (!Object.values(inputErrors).some(value => value === true)) {
-        const newSiswa = { id: uuidv4(), ...newUser };
-        siswa.push(newSiswa);
-        res.status(201).json({ message: "Siswa added successfully", newSiswa });
-    } else {
-        res.status(400).json({ message: "Validation failed", errors: inputErrors })
+        if (!Object.values(inputErrors).some(value => value === true)) {
+            await dbRun(
+                "INSERT INTO siswa (id, nama, nis, kelas, absen, subdivisi_jurusan, id_jurusan, password, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [id, nama, nis, kelas, absen, subdivisi, id_jurusan, password, role]
+            );
+            res.status(201).json({ message: "Siswa added successfully" });
+        } else {
+            res.status(400).json({ message: "Validation failed", errors: inputErrors })
+        }
+    } catch (error) {
+        console.error("Register error:", error);
+        res.status(500).json({ message: "Internal server error", error: error.message });
     }
-
 });
 
-app.get('/absensi', (req, res) => {
-    const { tanggal, id_siswa, keterangan, waktu } = req.query;
-    let filteredAbsensi = absensi;
+app.get('/absensi', async (req, res) => {
+    try {
+        const { tanggal = '', id_siswa = '', keterangan = '', waktu = '' } = req.query;
+        let sql = "SELECT * FROM absensi WHERE 1=1";
+        const params = [];
 
-    if (tanggal) {
-        filteredAbsensi = filteredAbsensi.filter(item => item.tanggal === tanggal);
-    }
-    if (id_siswa) {
-        filteredAbsensi = filteredAbsensi.filter(item => item.id_siswa == id_siswa);
-    }
-    if (keterangan) {
-        filteredAbsensi = filteredAbsensi.filter(item => item.keterangan === keterangan);
-    }
-    if (waktu) {
-        filteredAbsensi = filteredAbsensi.filter(item => item.waktu === waktu);
-    }
+        if (tanggal) {
+            sql += " AND tanggal = ?";
+            params.push(tanggal);
+        }
+        if (id_siswa) {
+            sql += " AND id_siswa = ?";
+            params.push(id_siswa);
+        }
+        if (keterangan) {
+            sql += " AND keterangan = ?";
+            params.push(keterangan);
+        }
+        if (waktu) {
+            sql += " AND waktu = ?";
+            params.push(waktu);
+        }
 
-    if (filteredAbsensi.length === 0) {
-        return res.status(404).json({ message: "Data not found" });
-    }
+        const absensi = await dbAll(sql, params);
 
-    res.json(filteredAbsensi);
+        if (absensi.length === 0) {
+            return res.status(404).json({ message: "Data not found" });
+        }
+
+        res.json(absensi);
+    } catch (error) {
+        console.error("Error fetching absensi:", error);
+        res.status(500).json({ message: "Error fetching absensi", error: error });
+    }
 });
 
-app.post('/absensi', (req, res) => {
-    const newAbsen = req.body;
-    newAbsen.id = uuidv4();
-    absensi.push(newAbsen);
-    res.status(201).json({ message: "Absensi berhasil ditambahkan", data: newAbsen });
-});
+app.post('/absensi', async (req, res) => {
+    try {
+        const { tanggal, id_siswa, keterangan, waktu, hari } = req.body;
+        const absensi = await dbAll("SELECT * FROM absensi WHERE id_siswa = ? AND tanggal = ?", [id_siswa, tanggal]);
+        const id = uuidv4();
 
-app.put('/absensi', (req, res) => {
-    const idAbsensi = req.body.id;
-    const newKeterangan = req.body.editedKeterangan;
-    const absen = absensi.find(a => a.id === idAbsensi);
+        if (absensi.length > 0) {
+            return res.status(400).json({ error: "Absensi already exists for this student." });
+        }
 
-    if (!absen) {
-        return res.status(404).json({ message: "Absensi tidak ditemukan" });
+        await dbRun(
+            "INSERT INTO absensi (id, tanggal, id_siswa, keterangan, waktu, hari) VALUES (?, ?, ?, ?, ?, ?)",
+            [id, tanggal, id_siswa, keterangan, waktu, hari]
+        );
+
+        res.status(201).json({ message: "Absensi berhasil ditambahkan", data: { id, tanggal, id_siswa, keterangan, waktu, hari } });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-
-    absen.keterangan = newKeterangan;
-
-    res.status(200).json({ message: "Absensi updated successfully", data: absen });
 });
 
+app.put('/absensi', async (req, res) => {
+    try {
+        const idAbsensi = req.body.id;
+        const newKeterangan = req.body.editedKeterangan;
+        const absen = await dbGet("SELECT * FROM absensi WHERE id = ?", [idAbsensi]);
 
-app.get('/guru', (req, res) => {
-    res.json(guru);
+        if (!absen) {
+            return res.status(404).json({ message: "Absensi tidak ditemukan" });
+        }
+
+        await dbRun("UPDATE absensi SET keterangan = ? WHERE id = ?", [newKeterangan, idAbsensi]);
+
+        res.status(200).json({ message: "Absensi updated successfully", data: absen });
+    } catch (error) {
+        console.error("Error fetching absensi:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+app.get('/guru', async (req, res) => {
+    try {
+        const guru = await dbAll("SELECT * FROM guru");
+        res.json(guru);
+    } catch (error) {
+        console.error("Error fetching guru:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 });
 
 app.listen(PORT, () => {

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { onMounted, reactive, watch, ref } from 'vue';
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 import router from '@/router';
+import { RouterLink } from 'vue-router';
 
 axios.defaults.withCredentials = true;
 
@@ -13,7 +14,7 @@ const statusColors = reactive({
   terlambat: "text-[#FF1A1A]",
   menunggu: "text-white",
   izin: "text-[#FFD700]",
-  alpha: "text-[#FF1A1A]"
+  alpha: "text-[#570DF8]"
 });
 const filter = reactive({
   search: { content: '', focus: false },
@@ -25,7 +26,7 @@ const filter = reactive({
   jurusan: 0,
   subdivisi: '',
   keterangan: '',
-  tanggal: new Date().toISOString().split("T")[0]
+  tanggal: getCurrentDate()
 });
 const data = reactive({
   "siswa": [],
@@ -34,7 +35,7 @@ const data = reactive({
 });
 
 onMounted(async () => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getCurrentDate();
 
   try {
     const response = await axios.get("/api/siswa");
@@ -61,11 +62,21 @@ onMounted(async () => {
     const response = await axios.get(`/api/session`);
     sessionData.value = response.data;
     userData.value = sessionData.value.user;
+    console.log(sessionData);
   } catch (error) {
     console.error(error);
   }
 });
 
+function getCurrentDate() {
+    const formattedDate =  new Date().toLocaleDateString("id-ID", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    }).split("/").reverse().join("-");
+
+    return formattedDate;
+}
 function showLoading(id, seconds = 0.5) {
   return new Promise((resolve) => {
     const absensi = data.absensi.find(a => String(a.id) === String(id));
@@ -100,6 +111,32 @@ function refreshAbsensi() {
   filter.tanggal = 'yyyy-mm-dd';
   filter.tanggal = tanggal;
 }
+async function searchFilter(socket) {
+  if (filter.search.content.trim()) {
+    const filteredSiswa = data.siswa.filter(siswa =>
+      siswa.nama.toLowerCase().includes(filter.search.content.trim().toLowerCase()) ||
+      siswa.nis.includes(filter.search.content.trim()) ||
+      data.jurusan.find(jurusan => Number(jurusan.id) === Number(siswa.id_jurusan)).nama.toLowerCase().includes(filter.search.content.trim().toLowerCase())
+    );
+
+    if (filteredSiswa.length === 1) {
+      socket = await fetchAbsensi(`?id_siswa=${filteredSiswa[0].id}`);
+      filter.hari.active = true;
+    } else {
+      const idSiswa = filteredSiswa.map(siswa => siswa.id);
+      socket = socket.filter(absensi => idSiswa.includes(absensi.id_siswa));
+    }
+
+    if (filter.hari.active) {
+      socket = socket.filter(absensi => filter.hari.content.includes(absensi.hari));
+    }
+
+    return socket;
+  } else {
+    filter.hari.active = false;
+    return socket;
+  }
+}
 async function saveEdit(id) {
   const absensi = data.absensi.find(a => String(a.id) === String(id));
   absensi.isEditing = false;
@@ -115,7 +152,7 @@ async function saveEdit(id) {
 
   try {
     const response = await axios.put('/api/absensi', updatedAbsensi);
-    await showLoading( absensi.id );
+    await showLoading(absensi.id);
     refreshAbsensi();
   } catch (error) {
     console.error(error);
@@ -149,60 +186,38 @@ watch(
 watch(
   filter,
   async (newVal) => {
+    let socket = data.absensi;
 
     if (filter.tanggal !== '') {
-      data.absensi = await fetchAbsensi(`?tanggal=${filter.tanggal}`);
+      socket = await fetchAbsensi(`?tanggal=${filter.tanggal}`);
     }
 
-    if (filter.keterangan) {
-      data.absensi = data.absensi.filter(absensi => absensi.keterangan.toLowerCase() == filter.keterangan.toLowerCase());
+    socket = await searchFilter(socket);
+
+    if (filter.keterangan !== '') {
+      socket = socket.filter(absensi => absensi.keterangan.toLowerCase() == filter.keterangan.toLowerCase());
     }
 
     if (filter.jurusan) {
-      const filteredSiswa = data.siswa.filter(siswa => siswa.id_jurusan == filter.jurusan);
-      const idSiswa = filteredSiswa.map(siswa => Number(siswa.id));
-      data.absensi = data.absensi.filter(absensi => idSiswa.includes(absensi.id_siswa));
+      const filteredSiswa = data.siswa.filter(siswa => Number(siswa.id_jurusan) === Number(filter.jurusan));
+      const idSiswa = filteredSiswa.map(siswa => siswa.id);
+      socket = socket.filter(absensi => idSiswa.includes(absensi.id_siswa));
     }
 
     if (filter.subdivisi && [1, 2].includes(filter.jurusan)) {
       const filteredSiswa = data.siswa.filter(siswa => siswa.subdivisi_jurusan === filter.subdivisi);
-      const idSiswa = filteredSiswa.map(siswa => Number(siswa.id));
-      data.absensi = data.absensi.filter(absensi => idSiswa.includes(absensi.id_siswa));
+      const idSiswa = filteredSiswa.map(siswa => siswa.id);
+      socket = socket.filter(absensi => idSiswa.includes(absensi.id_siswa));
     }
 
-    if (filter.kelas && data.absensi) {
+    if (filter.kelas && socket /*data.absensi*/) {
       const filteredSiswa = data.siswa.filter(siswa => filter.kelas.includes(siswa.kelas));
-      const idSiswa = filteredSiswa.map(siswa => Number(siswa.id));
-      data.absensi = data.absensi.filter(absensi => idSiswa.includes(absensi.id_siswa));
+      const idSiswa = filteredSiswa.map(siswa => siswa.id);
+      socket = socket.filter(absensi => idSiswa.includes(absensi.id_siswa));
     }
 
-    if (filter.search.content.trim()) {
-      const filteredSiswa = data.siswa.filter(siswa =>
-        siswa.nama.toLowerCase().includes(filter.search.content.trim().toLowerCase()) ||
-        siswa.nis.includes(filter.search.content.trim()) ||
-        data.jurusan.find(jurusan => Number(jurusan.id) === Number(siswa.id_jurusan)).nama.toLowerCase().includes(filter.search.content.trim().toLowerCase())
-      );
+    data.absensi = socket;
 
-      console.log(filteredSiswa, filteredSiswa.length);
-
-      if (filteredSiswa.length === 1) {
-        console.log(true);
-        console.log(`?id_siswa=${filteredSiswa[0].id}`);
-        data.absensi = await fetchAbsensi(`?id_siswa=${filteredSiswa[0].id}`);
-        filter.hari.active = true;
-      } else {
-        const idSiswa = filteredSiswa.map(siswa => Number(siswa.id));
-        data.absensi = data.absensi.filter(absensi => idSiswa.includes(absensi.id_siswa));
-      }
-
-      if (filter.hari.active) {
-        data.absensi = data.absensi.filter(absensi => filter.hari.content.includes(absensi.hari));
-      }
-    } else {
-      filter.hari.active = false;
-    }
-
-    console.log(new Date().getDay());
   }
 );
 </script>
@@ -210,7 +225,7 @@ watch(
 <template>
   <div
     class="text-white min-h-screen bg-[linear-gradient(to_top_left,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)]">
-    <div class="container mx-auto py-[150px]">
+    <div class="p-[150px] flex flex-col">
 
       <div class="bg-gray-800 p-6 rounded-lg mb-6 shadow-lg">
         <div class="flex justify-between items-center m-6">
@@ -411,7 +426,8 @@ watch(
 
       <div v-if="filter.search.focus" class="space-y-6">
         <div
-          class="bg-gray-800 p-6 rounded-lg flex justify-center items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 min-h-[50vh]"> <!-- 188px -->
+          class="bg-gray-800 p-6 rounded-lg flex justify-center items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 min-h-[50vh]">
+          <!-- 188px -->
           <PulseLoader color="#570DF8" />
         </div>
       </div>
@@ -419,7 +435,10 @@ watch(
       <div v-else-if="!data.absensi && !filter.search.content.trim()" class="space-y-6">
         <div
           class="bg-gray-800 p-6 rounded-lg flex justify-center items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 min-h-[50vh]">
-          <h1 class="text-6xl font-bold text-white text-center">TIDAK ADA ABSENSI</h1>
+          <h1 class="text-6xl font-bold text-white text-center flex flex-col">
+            <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="text-[100px] mb-10 text-yellow-500" />
+            <span>TIDAK ADA ABSENSI</span>
+          </h1>
         </div>
       </div>
 
@@ -473,10 +492,35 @@ watch(
         </div>
       </div>
 
-
-
     </div>
   </div>
+  
+
+  
+
+<footer class="bg-gray-800 shadow-sm dark:bg-gray-900 flex flex-col">
+    <div class="w-full py-[60px] px-[150px]">
+
+        <div class="sm:flex sm:items-center sm:justify-between">
+            <div class="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
+                <img src="@/components/images/Logo.png" class="h-8" alt="Flowbite Logo" />
+                <h1 class="self-center text-3xl font-semibold whitespace-nowrap text-white cursor-default">Proyek-Absensi</h1>
+            </div>
+            <ul class="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-400 sm:mb-0 dark:text-gray-400 hidden">
+                <li><RouterLink to="#" class="hover:underline me-4 md:me-6">About</RouterLink></li>
+                <li><RouterLink to="#" class="hover:underline me-4 md:me-6">Privacy Policy</RouterLink></li>
+                <li><RouterLink to="#" class="hover:underline me-4 md:me-6">Licensing</Routerlink></li>
+                <li><RouterLink to="#" class="hover:underline">Contact</RouterLink></li>
+            </ul>
+        </div>
+        <hr class="my-6 border-gray-500 sm:mx-auto dark:border-gray-700 lg:my-8" />
+        <span class="cursor-default block text-sm text-gray-400 sm:text-center dark:text-gray-400">© 2025 <RouterLink to="#" class="hover:underline">Proyek-Absensi</RouterLink>. Diproduksi dan dikembangkan dengan dedikasi.</span>
+
+        
+    </div>
+</footer>
+
+
 </template>
 
 <style scoped>

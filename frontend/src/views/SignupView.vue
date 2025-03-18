@@ -34,7 +34,8 @@ const signup = async () => {
         subdivisi: form.subdivisi.content,
         id_jurusan: form.jurusan.content,
         password: form.password.content,
-        confirmPassword: form.confirmPassword.content
+        confirmPassword: form.confirmPassword.content,
+        role: 'siswa'
     };
 
     form.nama.error = false;
@@ -44,9 +45,7 @@ const signup = async () => {
     form.jurusan.error = false;
     form.password.error = false;
     form.confirmPassword.error = false;
-
-    console.log( formData )
-
+    
     try {
         const response = await axios.post('/api/siswa', formData);
         router.push(`/`);
