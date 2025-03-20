@@ -62,7 +62,6 @@ onMounted(async () => {
     const response = await axios.get(`/api/session`);
     sessionData.value = response.data;
     userData.value = sessionData.value.user;
-    console.log(sessionData);
   } catch (error) {
     console.error(error);
   }
@@ -217,7 +216,6 @@ watch(
     }
 
     data.absensi = socket;
-
   }
 );
 </script>
@@ -432,7 +430,7 @@ watch(
         </div>
       </div>
 
-      <div v-else-if="!data.absensi && !filter.search.content.trim()" class="space-y-6">
+      <div v-else-if="!data.absensi.length && !filter.search.content.trim()" class="space-y-6">
         <div
           class="bg-gray-800 p-6 rounded-lg flex justify-center items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 min-h-[50vh]">
           <h1 class="text-6xl font-bold text-white text-center flex flex-col">
@@ -442,7 +440,7 @@ watch(
         </div>
       </div>
 
-      <div v-else-if="data.absensi" class="space-y-6" v-for="absensi in data.absensi" :key="data.absensi.id">
+      <div v-else-if="data.absensi.length" class="space-y-6" v-for="absensi in data.absensi" :key="data.absensi.id">
         <div v-if="data && data.siswa && data.jurusan && absensi && !absensi.isLoading"
           class="bg-gray-800 p-6 rounded-lg flex justify-between items-center shadow-2xl px-[70px] py-[40px] mb-6 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:bg-gray-700 h-[188px]">
           <div>
