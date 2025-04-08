@@ -38,7 +38,7 @@ const signup = async () => {
     form.mataPelajaran.error = false;
     form.password.error = false;
     form.confirmPassword.error = false;
-
+    
     try {
         await axios.post('/api/guru', formData);
         router.push(`/`);
@@ -75,24 +75,20 @@ const signup = async () => {
                     <input class="w-full px-4 py-2 border rounded-lg" type="text" id="nip" v-model="form.nip.content">
                     <p v-if="form.nip.error" class="text-red-500 text-sm mt-2">NIP tidak valid</p>
                 </div>
-
+                
                 <div class="mb-4">
                     <label class="block text-gray-400 text-sm font-bold mb-2" for="password">Kata Sandi</label>
-                    <input class="w-full px-4 py-2 border rounded-lg" type="password" id="password"
-                        v-model="form.password.content">
+                    <input class="w-full px-4 py-2 border rounded-lg" type="password" id="password" v-model="form.password.content">
                     <p v-if="form.password.error" class="text-red-500 text-sm mt-2">Password minimal 8 karakter.</p>
                 </div>
 
                 <div class="mb-6">
-                    <label class="block text-gray-400 text-sm font-bold mb-2" for="confirmPassword">Konfirmasi Kata
-                        Sandi</label>
-                    <input class="w-full px-4 py-2 border rounded-lg" type="password" id="confirmPassword"
-                        v-model="form.confirmPassword.content">
+                    <label class="block text-gray-400 text-sm font-bold mb-2" for="confirmPassword">Konfirmasi Kata Sandi</label>
+                    <input class="w-full px-4 py-2 border rounded-lg" type="password" id="confirmPassword" v-model="form.confirmPassword.content">
                     <p v-if="form.confirmPassword.error" class="text-red-500 text-sm mt-2">Kata sandi tidak cocok</p>
                 </div>
 
-                <button class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg cursor-pointer"
-                    type="submit">
+                <button class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg cursor-pointer" type="submit">
                     Daftar
                 </button>
             </form>
