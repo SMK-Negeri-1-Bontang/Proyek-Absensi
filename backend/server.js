@@ -629,7 +629,7 @@ app.post('/guru', async (req, res) => {
           function checkForErrors() {
                     if (errors) {
                               res.status(400).json({
-                                        message: 'Validation failed',
+                                        message: 'Validasi Gagal',
                                         form,
                               })
                               return true
@@ -654,7 +654,7 @@ app.post('/guru', async (req, res) => {
                     )
 
                     res.status(201).json({
-                              message: 'Guru added successfully',
+                              message: 'Guru berhasil ditambah',
                     })
           }
 
