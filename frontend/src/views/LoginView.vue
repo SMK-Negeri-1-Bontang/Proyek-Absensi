@@ -137,13 +137,9 @@ async function login() {
                     )
                     const response = await axios.post('/api/login', formData)
 
-                    if (
-                              user.role === 'siswa' &&
-                              waktu >= '06:00:00' &&
-                              waktu <= '08:00:00'
-                    ) {
+                    if (user.role === 'siswa') {
                               await getSessionData()
-                              absen()
+                              if (waktu >= '06:00:00' && waktu <= '08:00:00') absen()
                               router.push(`/splash`)
                     } else if (user.role === 'guru') {
                               router.push(`/dashboard`)
@@ -178,114 +174,67 @@ async function login() {
           <!--<pre>{{ JSON.stringify(users, null, 2) }}</pre>-->
 
           <div
-                    class="flex items-center justify-center h-screen bg-[image:url('/src/components/images/kde_mountain.png')] bg-cover"
-          >
-                    <div
-                              class="w-full max-w-md bg-gray-800 p-8 pt-16 rounded-lg shadow-lg"
-                    >
-                              <img
-                                        src="/src/components/images/Logo.png"
-                                        alt="logo"
-                                        class="h-16 mx-auto mb-2"
-                              />
+                    class="flex items-center justify-center h-screen bg-[image:url('/src/components/images/kde_mountain.png')] bg-cover">
+                    <div class="w-full max-w-md bg-gray-800 p-8 pt-16 rounded-lg shadow-lg">
+                              <img src="/src/components/images/Logo.png" alt="logo" class="h-16 mx-auto mb-2" />
                               <!-- mx-auto mungkin merusakkan sesuatu-->
-                              <h1
-                                        class="text-2xl font-bold text-center mb-6 text-white"
-                              >
+                              <h1 class="text-2xl font-bold text-center mb-6 text-white">
                                         Log in
                               </h1>
 
                               <form @submit.prevent="login">
                                         <div class="mb-4">
-                                                  <label
-                                                            class="block text-gray-400 text-sm font-bold mb-2"
-                                                            for="nama"
-                                                            >Nama</label
-                                                  >
-                                                  <input
-                                                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
-                                                            type="text"
-                                                            placeholder="Masukkan nama"
-                                                            id="nama"
-                                                            name="nama"
-                                                            v-model="
-                                                                      form.nama
-                                                                                .content
-                                                            "
-                                                            required
-                                                  />
-                                                  <p
-                                                            v-if="
-                                                                      form.nama
-                                                                                .error
-                                                            "
-                                                            class="text-red-500 text-sm mt-2"
-                                                  >
+                                                  <label class="block text-gray-400 text-sm font-bold mb-2"
+                                                            for="nama">Nama</label>
+                                                  <input class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
+                                                            type="text" placeholder="Masukkan nama" id="nama"
+                                                            name="nama" v-model="form.nama
+                                                                      .content
+                                                                      " required />
+                                                  <p v-if="
+                                                            form.nama
+                                                                      .error
+                                                  " class="text-red-500 text-sm mt-2">
                                                             Nama tidak valid.
                                                   </p>
                                         </div>
                                         <div class="mb-2">
-                                                  <label
-                                                            class="block text-gray-400 text-sm font-bold mb-2"
-                                                            for="password"
-                                                            >Kata Sandi</label
-                                                  >
-                                                  <input
-                                                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
-                                                            type="password"
-                                                            id="password"
-                                                            name="password"
-                                                            placeholder="Masukkan kata sandi"
-                                                            v-model="
-                                                                      form
-                                                                                .password
-                                                                                .content
-                                                            "
-                                                            required
-                                                  />
-                                                  <p
-                                                            v-if="
-                                                                      form
-                                                                                .password
-                                                                                .error
-                                                            "
-                                                            class="text-red-500 text-sm mt-2"
-                                                  >
+                                                  <label class="block text-gray-400 text-sm font-bold mb-2"
+                                                            for="password">Kata Sandi</label>
+                                                  <input class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
+                                                            type="password" id="password" name="password"
+                                                            placeholder="Masukkan kata sandi" v-model="form
+                                                                      .password
+                                                                      .content
+                                                                      " required />
+                                                  <p v-if="
+                                                            form
+                                                                      .password
+                                                                      .error
+                                                  " class="text-red-500 text-sm mt-2">
                                                             Password tidak
                                                             valid.
                                                   </p>
-                                                  <p
-                                                            v-if="form.ontime"
-                                                            class="text-red-500 text-sm mt-2"
-                                                  >
+                                                  <p v-if="form.ontime" class="text-red-500 text-sm mt-2">
                                                             Anda hanya bisa
                                                             absen pada jam 6-8
                                                             pagi.
                                                   </p>
-                                                  <p
-                                                            v-if="form.hari"
-                                                            class="text-red-500 text-sm mt-2"
-                                                  >
+                                                  <p v-if="form.hari" class="text-red-500 text-sm mt-2">
                                                             Anda hanya bisa
                                                             absen pada hari
                                                             Senin-Jum'at.
                                                   </p>
-                                                  <p
-                                                            v-if="
-                                                                      userPosition.error
-                                                            "
-                                                            class="text-red-500 text-sm mt-2"
-                                                  >
+                                                  <p v-if="
+                                                            userPosition.error
+                                                  " class="text-red-500 text-sm mt-2">
                                                             {{
                                                                       userPosition.error
                                                             }}
                                                   </p>
-                                                  <p
-                                                            v-if="
-                                                                      geolocationError
-                                                            "
-                                                            class="text-red-500 text-sm mt-2"
-                                                  >
+                                                  <p v-if="
+                                                            geolocationError
+                                                  " class="text-red-500 text-sm mt-2">
                                                             {{
                                                                       geolocationError
                                                             }}
@@ -293,24 +242,16 @@ async function login() {
                                         </div>
 
                                         <p class="mb-6 text-sm">
-                                                  <RouterLink
-                                                            to="/register"
-                                                            class="text-white"
-                                                            >Sign up
-                                                            <font-awesome-icon
-                                                                      :icon="[
-                                                                                'fas',
-                                                                                'arrow-right',
-                                                                      ]"
-                                                                      class="text-white"
-                                                            />
+                                                  <RouterLink to="/register" class="text-white">Sign up
+                                                            <font-awesome-icon :icon="[
+                                                                      'fas',
+                                                                      'arrow-right',
+                                                            ]" class="text-white" />
                                                   </RouterLink>
                                         </p>
 
-                                        <button
-                                                  class="w-full bg-[linear-gradient(to_right,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)] hover:bg-[linear-gradient(to_right,#9161b0,#5f8af0,#9db3ff)] text-white font-bold py-2 px-4 rounded-lg cursor-pointer"
-                                                  type="submit"
-                                        >
+                                        <button class="w-full bg-[linear-gradient(to_right,#734190,#734190,#4a77e0,#4a77e0,#7c95ff,#7c95ff)] hover:bg-[linear-gradient(to_right,#9161b0,#5f8af0,#9db3ff)] text-white font-bold py-2 px-4 rounded-lg cursor-pointer"
+                                                  type="submit">
                                                   Masuk
                                         </button>
                               </form>

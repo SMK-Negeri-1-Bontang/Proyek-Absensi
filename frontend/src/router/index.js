@@ -66,7 +66,9 @@ router.beforeEach(async (to, from, next) => {
                               console.log('Redirecting to login...')
                               next('/')
                     } else if (
-                              (to.name === 'login' || to.name === 'signup') &&
+                              (to.name === 'login' ||
+                                        to.name === 'signup' ||
+                                        to.name === 'guru-signup') &&
                               isLoggedIn
                     ) {
                               next(redirectByRole[user.role])

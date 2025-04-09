@@ -68,13 +68,13 @@ onMounted(async () => {
 });
 
 function getCurrentDate() {
-    const formattedDate =  new Date().toLocaleDateString("id-ID", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    }).split("/").reverse().join("-");
+  const formattedDate = new Date().toLocaleDateString("id-ID", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).split("/").reverse().join("-");
 
-    return formattedDate;
+  return formattedDate;
 }
 function showLoading(id, seconds = 0.5) {
   return new Promise((resolve) => {
@@ -163,6 +163,7 @@ async function fetchAbsensi(condition) {
     return response.data.map(a => ({ ...a, isEditing: false, editedKeterangan: String(a.keterangan) }));
   } catch (error) {
     console.error(error);
+    return [];
   }
 }
 async function logout() {
@@ -216,6 +217,11 @@ watch(
     }
 
     data.absensi = socket;
+    console.log({
+      'data': data.absensi,
+      'socket': socket
+    });
+
   }
 );
 </script>
@@ -492,31 +498,42 @@ watch(
 
     </div>
   </div>
-  
 
-  
 
-<footer class="bg-gray-800 shadow-sm dark:bg-gray-900 flex flex-col">
+
+
+  <footer class="bg-gray-800 shadow-sm dark:bg-gray-900 flex flex-col">
     <div class="w-full py-[60px] px-[150px]">
 
-        <div class="sm:flex sm:items-center sm:justify-between">
-            <div class="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
-                <img src="@/components/images/Logo.png" class="h-8" alt="Flowbite Logo" />
-                <h1 class="self-center text-3xl font-semibold whitespace-nowrap text-white cursor-default">Proyek-Absensi</h1>
-            </div>
-            <ul class="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-400 sm:mb-0 dark:text-gray-400 hidden">
-                <li><RouterLink to="#" class="hover:underline me-4 md:me-6">About</RouterLink></li>
-                <li><RouterLink to="#" class="hover:underline me-4 md:me-6">Privacy Policy</RouterLink></li>
-                <li><RouterLink to="#" class="hover:underline me-4 md:me-6">Licensing</Routerlink></li>
-                <li><RouterLink to="#" class="hover:underline">Contact</RouterLink></li>
-            </ul>
+      <div class="sm:flex sm:items-center sm:justify-between">
+        <div class="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
+          <img src="@/components/images/Logo.png" class="h-8" alt="Flowbite Logo" />
+          <h1 class="self-center text-3xl font-semibold whitespace-nowrap text-white cursor-default">Proyek-Absensi</h1>
         </div>
-        <hr class="my-6 border-gray-500 sm:mx-auto dark:border-gray-700 lg:my-8" />
-        <span class="cursor-default block text-sm text-gray-400 sm:text-center dark:text-gray-400">© 2025 <RouterLink to="#" class="hover:underline">Proyek-Absensi</RouterLink>. Diproduksi dan dikembangkan dengan dedikasi.</span>
+        <ul
+          class="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-400 sm:mb-0 dark:text-gray-400 hidden">
+          <li>
+            <RouterLink to="#" class="hover:underline me-4 md:me-6">About</RouterLink>
+          </li>
+          <li>
+            <RouterLink to="#" class="hover:underline me-4 md:me-6">Privacy Policy</RouterLink>
+          </li>
+          <li>
+            <RouterLink to="#" class="hover:underline me-4 md:me-6">Licensing</Routerlink>
+          </li>
+          <li>
+            <RouterLink to="#" class="hover:underline">Contact</RouterLink>
+          </li>
+        </ul>
+      </div>
+      <hr class="my-6 border-gray-500 sm:mx-auto dark:border-gray-700 lg:my-8" />
+      <span class="cursor-default block text-sm text-gray-400 sm:text-center dark:text-gray-400">© 2025 <RouterLink
+          to="#" class="hover:underline">Proyek-Absensi</RouterLink>. Diproduksi dan dikembangkan dengan
+        dedikasi.</span>
 
-        
+
     </div>
-</footer>
+  </footer>
 
 
 </template>

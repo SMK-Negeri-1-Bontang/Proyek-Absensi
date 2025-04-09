@@ -12,8 +12,8 @@ const saltRounds = 10
 
 console.log('Server is starting...')
 
-function getCurrentDate() {
-          const formattedDate = new Date()
+function formatDate(date) {
+          return date
                     .toLocaleDateString('id-ID', {
                               year: 'numeric',
                               month: '2-digit',
@@ -22,15 +22,14 @@ function getCurrentDate() {
                     .split('/')
                     .reverse()
                     .join('-')
-
-          return formattedDate
 }
 
 cron.schedule(
           '5 8 * * *',
           async () => {
                     try {
-                              const today = getCurrentDate()
+                              const today = new Date()
+                              const formattedToday = formatDate(today)
                               const dayOfWeek = today.getDay()
 
                               if (dayOfWeek === 0 || dayOfWeek === 6) {
@@ -45,7 +44,7 @@ cron.schedule(
                               const siswa = await dbAll('SELECT * FROM siswa')
                               const absensi = await dbAll(
                                         'SELECT id_siswa, tanggal FROM absensi WHERE tanggal = ?',
-                                        [today]
+                                        [formattedToday]
                               )
 
                               const absentStudents = siswa.filter(
@@ -55,7 +54,7 @@ cron.schedule(
                                                                       record.id_siswa ===
                                                                                 student.id &&
                                                                       record.tanggal ===
-                                                                                today
+                                                                                formattedToday
                                                   )
                               )
 
@@ -65,10 +64,10 @@ cron.schedule(
                                                   [
                                                             uuidv4(),
                                                             student.id,
-                                                            today,
+                                                            formattedToday,
                                                             '08:05:00',
                                                             'alpha',
-                                                            new Date().getDay(),
+                                                            today.getDay(),
                                                   ]
                                         )
                               }
