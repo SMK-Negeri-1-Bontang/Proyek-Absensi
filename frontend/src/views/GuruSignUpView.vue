@@ -47,7 +47,7 @@ const signup = async () => {
 </script>
 
 <template>
-          <div :class="['flex items-center justify-center sm:py-[150px] min-h-screen', isSmallScreen ? 'bg-gray-800' : bg-[url('@/components/images/kde_mountain.png')] bg-cover]">
+          <div :class="['flex items-center justify-center sm:py-[150px] min-h-screen', isSmallScreen ? 'bg-gray-800' : `bg-[url('@/components/images/kde_mountain.png')] bg-cover `]">
                     <div class="w-full max-w-full bg-gray-800 p-8 pt-16 rounded-lg sm:shadow-lg   sm:max-w-md">
                               <h1 class="text-2xl font-bold text-center mb-6 text-white">
                                         Sign up Guru
