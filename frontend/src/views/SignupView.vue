@@ -5,6 +5,7 @@ import router from '@/router'
 import axios from 'axios'
 
 axios.defaults.withCredentials = true
+const isSmallScreen = ref(false)
 
 const form = reactive({
     nama: { content: '', error: false },

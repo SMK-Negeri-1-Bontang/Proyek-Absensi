@@ -6,6 +6,7 @@ import axios from 'axios'
 import { RouterLink } from 'vue-router'
 
 axios.defaults.withCredentials = true
+const isSmallScreen = ref(false)
 
 const geolocationError = ref('')
 const users = ref([])
