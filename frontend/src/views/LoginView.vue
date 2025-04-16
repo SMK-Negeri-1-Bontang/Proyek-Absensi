@@ -47,13 +47,14 @@ onMounted(async () => {
                                         'Error getting location: ' +
                                         error.message
                     }
-                    const mediaQuery = window.matchMedia('(max-width: 639px)')
+                    
+          )
+          const mediaQuery = window.matchMedia('(max-width: 639px)')
     isSmallScreen.value = mediaQuery.matches
 
     mediaQuery.addEventListener('change', (e) => {
         isSmallScreen.value = e.matches
     })
-          )
 })
 
 function getCurrentDate() {
