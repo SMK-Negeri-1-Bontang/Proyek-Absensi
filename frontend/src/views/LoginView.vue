@@ -181,7 +181,7 @@ async function login() {
           <!--<pre>{{ JSON.stringify(users, null, 2) }}</pre>-->
 
           <div
-                    class="flex items-center justify-center h-screen bg-[image:url('/src/components/images/kde_mountain.png')] bg-cover">
+          :class="['flex items-center justify-center sm:py-[150px] min-h-screen', isSmallScreen ? 'bg-gray-800' : bg-[url('@/components/images/kde_mountain.png')] bg-cover]">
                     <div class="w-full max-w-md bg-gray-800 p-8 pt-16 rounded-lg shadow-lg">
                               <img src="/src/components/images/Logo.png" alt="logo" class="h-16 mx-auto mb-2" />
                               <!-- mx-auto mungkin merusakkan sesuatu-->
