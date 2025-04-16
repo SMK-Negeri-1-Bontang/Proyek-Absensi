@@ -19,7 +19,13 @@ const signup = async () => {
             form[field].error = false
         })
     }
+    function trimFields(obj, fields) {
+        fields.forEach(field => {
+            obj[field].content.trim();
+        })
+    }
     const formData = form;
+    trimFields(formData, ['nama', 'nip', 'password', 'comfirmPassword']);
     resetErrorMessage(['nama', 'nip', 'password', 'confirmPassword']);
 
     try {
@@ -51,7 +57,7 @@ const signup = async () => {
                     <label class="block text-gray-400 text-sm font-bold mb-2" for="nama">Nama</label>
                     <input
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
-                        type="text" id="nama" v-model="form.nama
+                        type="text" id="nama" placeholder="Masukkan nama" v-model="form.nama
                             .content
                             " />
                     <p v-if="
@@ -66,7 +72,7 @@ const signup = async () => {
                     <label class="block text-gray-400 text-sm font-bold mb-2" for="nip">NIP</label>
                     <input
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
-                        id="nip" v-model="form.nip
+                        id="nip" placeholder="Masukkan NIP" v-model="form.nip
                             .content
                             " />
                     <p v-if="
@@ -81,7 +87,7 @@ const signup = async () => {
                     <label class="block text-gray-400 text-sm font-bold mb-2" for="password">Kata Sandi</label>
                     <input
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
-                        type="password" id="password" v-model="form
+                        type="password" placeholder="Masukkan kata sandi" id="password" v-model="form
                             .password
                             .content
                             " />
@@ -99,7 +105,7 @@ const signup = async () => {
                         Sandi</label>
                     <input
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
-                        type="password" id="confirmPassword" v-model="form
+                        type="password" id="confirmPassword" placeholder="Konfirmasi kata sandi" v-model="form
                             .confirmPassword
                             .content
                             " />

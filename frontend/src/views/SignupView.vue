@@ -1,5 +1,6 @@
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, watch } from 'vue'
+import { RouterLink } from 'vue-router'
 import router from '@/router'
 import axios from 'axios'
 
@@ -10,7 +11,7 @@ const form = reactive({
     nis: { content: '', error: false },
     password: { content: '', error: false },
     confirmPassword: { content: '', error: false },
-    kelas: { content: 0, error: false },
+    kelas: { content: 1, error: false },
     subdivisi: { content: 'tidak ada', error: false },
     jurusan: { content: 0, error: false },
 })
@@ -27,14 +28,14 @@ onMounted(async () => {
 
 const signup = async () => {
     const formData = {
-        nama: form.nama.content,
-        nis: form.nis.content,
+        nama: form.nama.content.trim(),
+        nis: form.nis.content.trim(),
         kelas: form.kelas.content,
         absen: 0,
         subdivisi: form.subdivisi.content,
         id_jurusan: form.jurusan.content,
-        password: form.password.content,
-        confirmPassword: form.confirmPassword.content,
+        password: form.password.content.trim(),
+        confirmPassword: form.confirmPassword.content.trim(),
         role: 'siswa',
     }
 
@@ -65,6 +66,17 @@ const signup = async () => {
         console.error('Error signing up', error)
     }
 }
+
+watch(
+    () => form.jurusan.content,
+    (newVal) => {
+        if ((newVal !== 1 || newVal !== 2) && form.subdivisi.content !== 'tidak ada') {
+            form.subdivisi.content = 'tidak ada';
+        } else if (newVal === 1 || newVal === 2) {
+            form.subdivisi.content = 'A';
+        }
+    }
+);
 </script>
 
 <template>
@@ -84,7 +96,7 @@ const signup = async () => {
                     <input
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
                         type="text" placeholder="Masukkan nama" id="nama" v-model="form.nama
-                                .content
+                            .content
                             " />
                     <p v-if="
                         form.nama
@@ -99,7 +111,7 @@ const signup = async () => {
                     <input
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
                         type="text" placeholder="Masukkan NIS" id="nis" v-model="form.nis
-                                .content
+                            .content
                             " />
                     <p v-if="
                         form.nis
@@ -114,8 +126,8 @@ const signup = async () => {
                     <input
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
                         type="password" placeholder="Masukkan kata sandi" id="password" v-model="form
-                                .password
-                                .content
+                            .password
+                            .content
                             " />
                     <p v-if="
                         form
@@ -133,8 +145,8 @@ const signup = async () => {
                     <input
                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100"
                         type="password" placeholder="Konfirmasi kata sandi" id="confirmPassword" v-model="form
-                                .confirmPassword
-                                .content
+                            .confirmPassword
+                            .content
                             " />
                     <p v-if="
                         form
@@ -149,63 +161,65 @@ const signup = async () => {
                 <div class="flex flex-row gap-2">
                     <div class="mb-2">
                         <label class="block text-gray-400 text-sm font-bold mb-2" for="jurusan">Jurusan</label>
-                        <select
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-800"
-                            id="jurusan" v-model="form
-                                    .jurusan
-                                    .content
-                                ">
+                        <select :class="[
+                            'w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800',
+                            form.jurusan.content == 0 ? 'text-gray-400' : 'text-gray-100', 'border border-white focus:ring-blue-500'
+                        ]" id="jurusan" v-model="form
+                            .jurusan
+                            .content
+                            ">
+                            <option :value=0 disabled selected hidden>Pilih jurusan anda</option>
                             <option :value="1
-                                ">
+                                " class="text-gray-100">
                                 Kimia
                                 Analis
                             </option>
                             <option :value="2
-                                ">
+                                " class="text-gray-100">
                                 Kimia
                                 Industri
                             </option>
                             <option :value="3
-                                ">
+                                " class="text-gray-100">
                                 Otomasi
                                 Industri
                             </option>
                             <option :value="4
-                                ">
+                                " class="text-gray-100">
                                 Pengembangan
                                 Perangkat
                                 Lunak
                                 &
-                                Game
+                                Gim
                             </option>
                             <option :value="5
-                                ">
+                                " class="text-gray-100">
                                 Tata
                                 Pendinginan
                                 Udara
                             </option>
                             <option :value="6
-                                ">
+                                " class="text-gray-100">
                                 Teknik
                                 Listrik
                             </option>
                             <option :value="7
-                                ">
+                                " class="text-gray-100">
                                 Teknik
                                 Kendaraan
                                 Ringan
                             </option>
                             <option :value="8
-                                ">
+                                " class="text-gray-100">
                                 Teknik
                                 Pengelasan
                             </option>
                             <option :value="9
-                                ">
+                                " class="text-gray-100">
                                 Farmasi
                             </option>
                             <option :value="10
-                                ">
+                                " class="text-gray-100">
                                 Teknik
                                 Mesin
                             </option>
@@ -235,10 +249,10 @@ const signup = async () => {
                         <select
                             class="w-22 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-800"
                             id="subdivisi" v-model="form
-                                    .subdivisi
-                                    .content
+                                .subdivisi
+                                .content
                                 ">
-                            <option value="tidak ada"></option>
+                            <option value="tidak ada" hidden disabled selected></option>
                             <option value="A">
                                 A
                             </option>
@@ -262,8 +276,8 @@ const signup = async () => {
                         <select
                             class="w-22 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-800"
                             id="kelas" v-model="form
-                                    .kelas
-                                    .content
+                                .kelas
+                                .content
                                 ">
                             <option :value="1
                                 ">
