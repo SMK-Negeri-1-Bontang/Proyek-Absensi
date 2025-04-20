@@ -25,36 +25,53 @@ setTimeout(() => {
 </script>
 
 <template>
-          <div :class="['flex justify-center items-center min-h-screen text-white', transition.bg ? 'bg-pulse' : '']">
-                    <div class="text-center">
-                              <div class="w-70 h-auto mx-auto mb-[-40px] relative">
-                                        <img src="@/components/images/Logo.png" alt="Logo"
-                                                  :class="['img w-70 h-auto mx-auto absolute', transition.img ? 'img-pulse' : '']"
-                                                  style="--first-opacity: 1; --second-opacity: 0" />
-                                        <img src="@/components/images/inverted_logo.png" alt="Logo"
-                                                  :class="['img w-70 h-auto mx-auto', transition.img ? 'img-pulse' : 'invisible']"
-                                                  style="--first-opacity: 0; --second-opacity: 1" />
-                              </div>
-
-                              <p :class="['txt text-white text-[170px] font-bold', transition.text ? 'txt-pulse' : '']"
-                                        style="--first-color: white; --second-color: black;">
-                                        404
-                              </p>
-                              <p :class="['txt text-white text-4xl mt-[-50px] mb-2', transition.text ? 'txt-pulse' : '']"
-                                        style="--first-color: white; --second-color: black;">
-                                        Page Not Found
-                              </p>
-                              <RouterLink :class="['txt', transition.text ? 'txt-pulse' : '']" to="/"
-                                        style="--first-color: #9ca3af; --second-color: #111827;">
-                                        Kembali ke laman login
-                                        <font-awesome-icon :icon="[
-                                                  'fas',
-                                                  'arrow-right',
-                                        ]" />
-                              </RouterLink>
-                    </div>
-          </div>
-</template>
+    <div :class="['flex justify-center items-center min-h-screen text-white', transition.bg ? 'bg-pulse' : '']">
+      <div class="text-center">
+        <div class="w-40 sm:w-70 h-auto mx-auto mb-[-20px] sm:mb-[-40px] relative">
+          <img
+            src="@/components/images/Logo.png"
+            alt="Logo"
+            :class="['img w-40 sm:w-70 h-auto mx-auto absolute', transition.img ? 'img-pulse' : '']"
+            style="--first-opacity: 1; --second-opacity: 0"
+          />
+          <img
+            src="@/components/images/inverted_logo.png"
+            alt="Logo"
+            :class="['img w-40 sm:w-70 h-auto mx-auto', transition.img ? 'img-pulse' : 'invisible']"
+            style="--first-opacity: 0; --second-opacity: 1"
+          />
+        </div>
+  
+        <p
+          :class="[
+            'txt text-white text-[90px] sm:text-[170px] font-bold',
+            transition.text ? 'txt-pulse' : ''
+          ]"
+          style="--first-color: white; --second-color: black;"
+        >
+          404
+        </p>
+        <p
+          :class="[
+            'txt text-white text-xl sm:text-4xl mt-[-30px] sm:mt-[-50px] mb-2',
+            transition.text ? 'txt-pulse' : ''
+          ]"
+          style="--first-color: white; --second-color: black;"
+        >
+          Page Not Found
+        </p>
+        <RouterLink
+          :class="['txt text-sm sm:text-base', transition.text ? 'txt-pulse' : '']"
+          to="/"
+          style="--first-color: #9ca3af; --second-color: #111827;"
+        >
+          Kembali ke laman login
+          <font-awesome-icon :icon="['fas', 'arrow-right']" />
+        </RouterLink>
+      </div>
+    </div>
+  </template>
+  
 
 <style scoped>
 .bg-pulse {
