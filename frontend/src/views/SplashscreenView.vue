@@ -72,89 +72,80 @@ async function getAbsenData() {
 </script>
 
 <template>
-          <div
-                    class="bg-gray-900 flex items-center justify-center min-h-screen"
-          >
-                    <!-- Splash Screen -->
-                    <div
-                              v-if="showSplash"
-                              class="fixed inset-0 flex items-center justify-center bg-gray-900"
-                    >
-                              <h1
-                                        class="text-white text-4xl font-bold animate-pulse"
-                              >
-                                        Loading...
-                              </h1>
-                    </div>
+  <div class="bg-gray-900 flex items-center justify-center min-h-screen">
+    <!-- Splash Screen -->
+    <div
+      v-if="showSplash"
+      class="fixed inset-0 flex items-center justify-center bg-gray-900"
+    >
+      <h1 class="text-white text-5xl sm:text-3xl font-bold animate-pulse">
+        Loading...
+      </h1>
+    </div>
 
-                    <!-- Main Content -->
-                    <div
-                              v-if="showText"
-                              v-motion
-                              :initial="{ scale: 0, opacity: 0, rotate: -10 }"
-                              :enter="{
-                                        scale: 1,
-                                        opacity: 1,
-                                        rotate: 0,
-                                        transition: {
-                                                  duration: 0.8,
-                                                  ease: 'easeOut',
-                                                  bounce: 0.5,
-                                        },
-                              }"
-                              class="text-center"
-                    >
-                              <p
-                                        class="text-white text-2xl"
-                                        v-motion
-                                        :initial="{
-                                                  opacity: 0,
-                                                  y: -50,
-                                                  scale: 0.5,
-                                        }"
-                                        :enter="{
-                                                  opacity: 1,
-                                                  y: 0,
-                                                  scale: 1,
-                                                  transition: {
-                                                            delay: 300,
-                                                            duration: 0.8,
-                                                            ease: 'easeOut',
-                                                            bounce: 0.5,
-                                                  },
-                                        }"
-                              >
-                                        Anda...
-                              </p>
-                              <h1
-                                        v-motion="
-                                                  absenData.keterangan ===
-                                                  'hadir'
-                                                            ? {
-                                                                        initial: {
-                                                                                  scale: 0.5,
-                                                                        },
-                                                                        enter: {
-                                                                                  scale: 1.5,
-                                                                                  transition: {
-                                                                                            duration: 0.8,
-                                                                                            ease: 'easeOut',
-                                                                                  },
-                                                                        },
-                                                              }
-                                                            : {}
-                                        "
-                                        :class="`${statusColors[absenData.keterangan]} text-6xl font-bold`"
-                              >
-                                        {{ absenData.keterangan.toUpperCase() }}
-                              </h1>
-                              <button
-                                        class="text-white cursor-pointer"
-                                        @click="logout"
-                              >
-                                        Log out
-                              </button>
-                              <!--  PLACEHOLDER FOR TESTING ( ERASE ) -->
-                    </div>
-          </div>
+    <!-- Main Content -->
+    <div
+      v-if="showText"
+      v-motion
+      :initial="{ scale: 0, opacity: 0, rotate: -10 }"
+      :enter="{
+        scale: 1,
+        opacity: 1,
+        rotate: 0,
+        transition: {
+          duration: 0.8,
+          ease: 'easeOut',
+          bounce: 0.5,
+        },
+      }"
+      class="text-center"
+    >
+      <p
+        class="text-white text-2xl sm:text-base"
+        v-motion
+        :initial="{
+          opacity: 0,
+          y: -50,
+          scale: 0.5,
+        }"
+        :enter="{
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          transition: {
+            delay: 300,
+            duration: 0.8,
+            ease: 'easeOut',
+            bounce: 0.5,
+          },
+        }"
+      >
+        Anda...
+      </p>
+      <h1
+        v-motion="
+          absenData.keterangan === 'hadir'
+            ? {
+                initial: { scale: 0.5 },
+                enter: {
+                  scale: 1.5,
+                  transition: {
+                    duration: 0.8,
+                    ease: 'easeOut',
+                  },
+                },
+              }
+            : {}
+        "
+        :class="`${statusColors[absenData.keterangan]} text-7xl sm:text-4xl font-bold`"
+      >
+        {{ absenData.keterangan.toUpperCase() }}
+      </h1>
+      <button class="text-white text-lg sm:text-sm cursor-pointer" @click="logout">
+        Log out
+      </button>
+    </div>
+  </div>
 </template>
+
+
