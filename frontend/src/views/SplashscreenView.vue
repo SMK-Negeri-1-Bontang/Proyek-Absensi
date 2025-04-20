@@ -78,7 +78,7 @@ async function getAbsenData() {
       v-if="showSplash"
       class="fixed inset-0 flex items-center justify-center bg-gray-900"
     >
-      <h1 class="text-white text-5xl sm:text-3xl font-bold animate-pulse">
+      <h1 class="text-white text-4xl sm:text-10xl font-bold animate-pulse">
         Loading...
       </h1>
     </div>
@@ -101,7 +101,7 @@ async function getAbsenData() {
       class="text-center"
     >
       <p
-        class="text-white text-2xl sm:text-base"
+        class="text-white text-3xl sm:text-4xl"
         v-motion
         :initial="{
           opacity: 0,
@@ -137,15 +137,17 @@ async function getAbsenData() {
               }
             : {}
         "
-        :class="`${statusColors[absenData.keterangan]} text-7xl sm:text-4xl font-bold`"
+        :class="`${statusColors[absenData.keterangan]} text-7xl sm:text-8xl font-bold`"
       >
         {{ absenData.keterangan.toUpperCase() }}
       </h1>
-      <button class="text-white text-lg sm:text-sm cursor-pointer" @click="logout">
+      <button class="text-white text-xl sm:text-sm cursor-pointer mt-4" @click="logout">
         Log out
       </button>
     </div>
   </div>
 </template>
+
+
 
 
