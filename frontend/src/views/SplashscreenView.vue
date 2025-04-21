@@ -141,9 +141,6 @@ async function getAbsenData() {
       >
         {{ absenData.keterangan.toUpperCase() }}
       </h1>
-      <button class="text-white text-xl sm:text-sm cursor-pointer mt-4" @click="logout">
-        Log out
-      </button>
     </div>
   </div>
 </template>
