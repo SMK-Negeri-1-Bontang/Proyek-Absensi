@@ -81,13 +81,11 @@ async function getSessionData() {
 }
 async function absen() {
           const now = new Date()
-          const waktu =
-                    '07:00:00' ||
-                    new Date(
+          const waktu = new Date(
                               `1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, '')}`
                     )
                               .toTimeString()
-                              .split(' ')[0] // PLACEHOLDER FOR TESTING ( REPLACE )
+                              .split(' ')[0]
           const absenData = {
                     keterangan: '',
                     tanggal: getCurrentDate(),
@@ -118,13 +116,11 @@ async function login() {
           form.nama.error = false
           form.password.error = false
 
-          const waktu =
-                    '07:00:00' ||
-                    new Date(
+          const waktu = new Date(
                               `1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, '')}`
                     )
                               .toTimeString()
-                              .split(' ')[0] // PLACEHOLDER FOR TESTING ( REPLACE )
+                              .split(' ')[0]
           const formData = {
                     nama: form.nama.content,
                     password: form.password.content,

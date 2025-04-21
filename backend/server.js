@@ -137,18 +137,14 @@ const lokasiSekolah = {
 app.post('/login', async (req, res) => {
           try {
                     const { nama, password, userPosition } = req.body
-                    const waktu =
-                              '07:00:00' ||
-                              new Date(
-                                        `1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, '')}`
-                              )
-                                        .toTimeString()
-                                        .split(' ')[0] // PLACEHOLDER FOR TESTING ( REPLACE )
-                    const hari =
-                              'Monday' ||
-                              new Date().toLocaleDateString('en-GB', {
-                                        weekday: 'long',
-                              }) // PLACEHOLDER FOR TESTING ( REPLACE )
+                    const waktu = new Date(
+                              `1970-01-01 ${new Date().toLocaleTimeString().replace(/ (AM|PM)$/, '')}`
+                    )
+                              .toTimeString()
+                              .split(' ')[0]
+                    const hari = new Date().toLocaleDateString('en-GB', {
+                              weekday: 'long',
+                    })
                     const siswa = await dbAll('SELECT * FROM siswa')
                     const guru = await dbAll('SELECT * FROM guru')
                     const users = [...guru, ...siswa]
@@ -171,12 +167,6 @@ app.post('/login', async (req, res) => {
                                         error,
                               })
                     }
-
-                    // Simulate user location (for testing)
-                    userPosition.latitude =
-                              lokasiSekolah.red[0].latitude + 0.0001 // PLACEHOLDER FOR TESTING ( DELETE )
-                    userPosition.longitude =
-                              lokasiSekolah.red[0].longitude + 0.0001 // PLACEHOLDER FOR TESTING ( DELETE )
 
                     function isInsideZone(user, zone) {
                               const [bottomLeft, topRight] = zone
