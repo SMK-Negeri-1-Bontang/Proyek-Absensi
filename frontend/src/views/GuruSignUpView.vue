@@ -6,6 +6,7 @@ import axios from 'axios'
 axios.defaults.withCredentials = true
 const isSmallScreen = ref(false)
 
+// Menambahkan event listener agar view berubah sesuai ukuran screen
 onMounted(() => {
     const mediaQuery = window.matchMedia('(max-width: 639px)')
     isSmallScreen.value = mediaQuery.matches
@@ -15,6 +16,7 @@ onMounted(() => {
     })
 })
 
+// Form untuk menampung data form
 const form = reactive({
           nama: { content: '', error: false },
           nip: { content: '', error: false },
@@ -22,6 +24,7 @@ const form = reactive({
           confirmPassword: { content: '', error: false },
 })
 
+// Sign up data form user
 const signup = async () => {
           function resetErrorMessage(fields) {
                     fields.forEach(field => {
