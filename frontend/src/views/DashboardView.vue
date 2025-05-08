@@ -34,6 +34,7 @@ const data = reactive({
   "jurusan": []
 });
 
+// Mengambil data siswa, jurusan, absen hari ini dan session
 onMounted(async () => {
   const today = getCurrentDate();
 
@@ -67,6 +68,7 @@ onMounted(async () => {
   }
 });
 
+// Mengambil tanggal hari ini sebagai string
 function getCurrentDate() {
   const formattedDate = new Date().toLocaleDateString("id-ID", {
     year: "numeric",
@@ -76,6 +78,7 @@ function getCurrentDate() {
 
   return formattedDate;
 }
+// Menampilkan loading screen
 function showLoading(id, seconds = 0.5) {
   return new Promise((resolve) => {
     const absensi = data.absensi.find(a => String(a.id) === String(id));
@@ -88,6 +91,7 @@ function showLoading(id, seconds = 0.5) {
     }, seconds * 1000);
   });
 }
+// Format tanggal
 function formatDate(dateString) {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("en-GB", {
@@ -97,19 +101,23 @@ function formatDate(dateString) {
     year: "numeric"
   }).format(date);
 }
+// Menampilkan UI edit absen
 function editKeterangan(id) {
   const absensi = data.absensi.find(a => String(a.id) === String(id))
   absensi.isEditing = true;
 }
+// Menutup UI edit absen
 function cancelEdit(id) {
   const absensi = data.absensi.find(a => String(a.id) === String(id))
   absensi.isEditing = false;
 }
+// Refresh absen sesuai hari atau filter
 function refreshAbsensi() {
   const tanggal = filter.tanggal;
   filter.tanggal = 'yyyy-mm-dd';
   filter.tanggal = tanggal;
 }
+// Kondisional untuk filter searching
 async function searchFilter(socket) {
   if (filter.search.content.trim()) {
     const filteredSiswa = data.siswa.filter(siswa =>
@@ -136,6 +144,7 @@ async function searchFilter(socket) {
     return socket;
   }
 }
+// Simpan absen yang diedit ke database
 async function saveEdit(id) {
   const absensi = data.absensi.find(a => String(a.id) === String(id));
   absensi.isEditing = false;
@@ -157,6 +166,7 @@ async function saveEdit(id) {
     console.error(error);
   }
 }
+// Mengambil absensi dari database sesuai kondisional
 async function fetchAbsensi(condition) {
   try {
     const response = await axios.get(`/api/absensi${condition}`);
@@ -166,6 +176,7 @@ async function fetchAbsensi(condition) {
     return [];
   }
 }
+// Log out user
 async function logout() {
   try {
     const response = await axios.post("/api/logout");
@@ -175,6 +186,7 @@ async function logout() {
   }
 }
 
+// memantau jika jurusan yang diseleksi KI atau KA utk menampilkan filter A/B
 watch(
   () => filter.jurusan,
   (newVal) => {
@@ -183,6 +195,7 @@ watch(
     }
   }
 );
+// Memantau jika ada perubahan pada filter tanggal, search, keterangan, jurusan, subdivisi, atau kelas
 watch(
   filter,
   async (newVal) => {
@@ -217,11 +230,6 @@ watch(
     }
 
     data.absensi = socket;
-    console.log({
-      'data': data.absensi,
-      'socket': socket
-    });
-
   }
 );
 </script>
