@@ -7,6 +7,7 @@ import NotFoundView from '@/views/NotFoundView.vue'
 import SignupView from '@/views/SignupView.vue'
 import GuruSignUpView from '@/views/GuruSignUpView.vue'
 
+// Router untuk redireksi
 const router = createRouter({
           history: createWebHistory(import.meta.env.BASE_URL),
           routes: [
@@ -45,11 +46,14 @@ const router = createRouter({
           ],
 })
 
+// Constant untuk redireksi sesuai role
+
 const redirectByRole = {
           guru: '/dashboard',
           siswa: '/splash',
 }
 
+// Algoritme pengecekan kredensial user.
 router.beforeEach(async (to, from, next) => {
           try {
                     const response = await axios.get('/api/session')

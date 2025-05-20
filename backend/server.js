@@ -17,6 +17,7 @@ const saltRounds = 10
 
 console.log('Server is starting...')
 
+//Mengformat tanggal
 function formatDate(date) {
           return date
                     .toLocaleDateString('id-ID', {
@@ -29,6 +30,7 @@ function formatDate(date) {
                     .join('-')
 }
 
+//Cron adalah package untuk mengeksekusi kode sesuai jadwal
 cron.schedule(
           '5 8 * * *',
           async () => {
@@ -89,6 +91,7 @@ cron.schedule(
           }
 )
 
+// Link localhost
 app.use(express.json())
 app.use(
           cors({
@@ -97,6 +100,7 @@ app.use(
           })
 )
 
+// Keamanan
 app.use(
           session({
                     secret: '2763', // Change this to a secure key
