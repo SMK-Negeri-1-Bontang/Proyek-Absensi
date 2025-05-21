@@ -10,13 +10,24 @@ exports.getAllGuru = async (req, res) => {
           }
 }
 
-exports.createGuru = (req, res) => {
+exports.createGuru = async (req, res) => {
           try {
-                    const newGuru = guruModel.create(req.body)
-                    res.status(201).json(newGuru)
+                    const newGuru = await guruModel.create(req.body)
+                    res.status(201).json({
+                              message: 'Guru berhasil ditambah',
+                    })
           } catch (error) {
                     console.error('Error creating guru:', error)
-                    res.status(500).json({ message: 'Internal server error' })
+
+                    // Handle validation error
+                    if (error.status === 400) {
+                              res.status(400).json({
+                                        message: 'Validasi Gagal',
+                                        form: error.form,
+                              })
+                    } else {
+                              res.status(500).json({ message: 'Internal server error' })
+                    }
           }
 }
 
@@ -56,8 +67,8 @@ exports.editGuru = async (req, res) => {
 
 exports.deleteGuru = async (req, res) => {
           try {
-                    const id = req.body
-                    const result = await absensiModel.delete(id)
+                    const id = req.body.id
+                    const result = await guruModel.delete(id)
                     res.json({
                               message: 'Guru deleted successfully',
                               error: false,

@@ -38,7 +38,8 @@ exports.createAbsensi = async (req, res) => {
 
 exports.deleteAbsensi = async (req, res) => {
           try {
-                    const id = req.body
+                    const id = req.body.id
+                    console.log(id)
                     const result = await absensiModel.delete(id)
                     res.json({ message: 'Absensi deleted successfully' })
           } catch (error) {

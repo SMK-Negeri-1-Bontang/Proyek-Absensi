@@ -28,7 +28,6 @@ exports.editSiswa = async (req, res) => {
           const formExample = {
                     id: 'currentID',
                     nama: 'newNama',
-                    password: 'newPassword',
                     nis: 'newNis',
                     kelas: 2,
                     absen: 30,

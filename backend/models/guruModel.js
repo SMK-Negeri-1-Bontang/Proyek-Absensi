@@ -1,5 +1,6 @@
 const { dbAll, dbGet, dbRun, dbDelete } = require('../utils/dbUtils')
 const bcrypt = require('bcrypt')
+const { v4: uuidv4 } = require('uuid')
 
 exports.findAll = async () => {
           const guru = await dbAll('SELECT * FROM guru')
@@ -9,58 +10,28 @@ exports.findAll = async () => {
 exports.create = async (guruData) => {
           let errors = 0
           const form = guruData
-          const names = await dbAll(
-                    `SELECT nama FROM guru UNION SELECT nama FROM siswa`
-          )
+          const names = await dbAll(`SELECT nama FROM guru UNION SELECT nama FROM siswa`)
           const nips = await dbAll('SELECT nip FROM guru')
-          /*
+
           const filter = {
                     nama: {
-                              'isNotEmpty': form.nama.content.trim() !== '' ? false : 'Nama tidak boleh kosong.',
-                              'isNotOver': form.nama.content.length() < 100 ? false : 'Nama tidak boleh lebih dari 100 karakter',
-                              'isNotSame': !guru.map( g => g.nama ).includes( form.nama.content ) ? false : 'Nama sudah terpakai.'
-                    },
-                    nip: {
-                              'isNotEmpty': form.nip.content.trim() !== '' ? false : 'NIP tidak boleh kosong.',
-                              'isNotOver': form.nip.content.length() < 18 ? false : 'NIP tidak boleh lebih dari 18 karakter.',
-                              'isNotValid': typeof Number( form.nip.content ) === 'number' ? false : 'NIP tidak valid.'
-                    },
-                    password: {
-                              'isNotEmpty': form.password.content.trim() !== '' ? false : 'Password tidak boleh kosong.',
-                              'isNotOver': form.password.content.length() < 100 ? false : 'Password tidak boleh lebih dari 100 karakter.'
-                    },
-                    confirmPassword: {
-                              'isTheSame': form.confirmPassword.content === form.password.content ? false : 'Password tidak cocok.'
-                    },
-          }
-          */
-          const filter = {
-                    nama: {
-                              isNotSame: names
-                                        .map((n) => n.nama)
-                                        .includes(form.nama.content)
+                              isNotSame: names.map((n) => n.nama).includes(form.nama.content)
                                         ? 'Nama sudah terpakai.'
                                         : false,
                               isInRange: !(
-                                        form.nama.content.trim() === '' ||
-                                        form.nama.content.length >= 100
+                                        form.nama.content.trim() === '' || form.nama.content.length >= 100
                               )
                                         ? false
                                         : 'Nama harus diisi dan tidak boleh lebih dari 100 karakter.',
                     },
                     nip: {
-                              isValid: isNaN(Number(form.nip.content))
-                                        ? 'NIP tidak valid.'
-                                        : false,
+                              isValid: isNaN(Number(form.nip.content)) ? 'NIP tidak valid.' : false,
                               isInRange: !(
-                                        form.nip.content.trim() === '' ||
-                                        form.nip.content.length !== 18
+                                        form.nip.content.trim() === '' || form.nip.content.length !== 18
                               )
                                         ? false
                                         : 'NIP harus 18 karakter.',
-                              isNotSame: nips
-                                        .map((n) => n.nip)
-                                        .includes(form.nip.content.trim())
+                              isNotSame: nips.map((n) => n.nip).includes(form.nip.content.trim())
                                         ? 'NIP telah digunakan.'
                                         : false,
                     },
@@ -75,16 +46,15 @@ exports.create = async (guruData) => {
                     },
                     confirmPassword: {
                               isTheSame:
-                                        form.confirmPassword.content !==
-                                        form.password.content
+                                        form.confirmPassword.content !== form.password.content
                                                   ? 'Password tidak cocok.'
                                                   : false,
-                              password404:
-                                        form.password.content.trim() === ''
-                                                  ? 'Password belum dibuat.'
-                                                  : false,
+                              password404: form.password.content.trim() === ''
+                                        ? 'Password belum dibuat.'
+                                        : false,
                     },
           }
+
           function validate(fieldNames) {
                     fieldNames.forEach((field) => {
                               const conditions = Object.values(filter[field])
@@ -97,47 +67,28 @@ exports.create = async (guruData) => {
                               }
                     })
           }
-          function checkForErrors() {
-                    if (errors) {
-                              res.status(400).json({
-                                        message: 'Validasi Gagal',
-                                        form,
-                              })
-                              return true
-                    }
-                    return false
-          }
-          async function addGuru() {
-                    const hashedPassword = await bcrypt.hash(
-                              form.password.content,
-                              10
-                    )
-
-                    await dbRun(
-                              'INSERT INTO guru (id, nama, nip, password, role) VALUES (?, ?, ?, ?, ?)',
-                              [
-                                        uuidv4(),
-                                        form.nama.content,
-                                        form.nip.content,
-                                        hashedPassword,
-                                        'guru',
-                              ]
-                    )
-
-                    res.status(201).json({
-                              message: 'Guru berhasil ditambah',
-                    })
-          }
 
           validate(['nama', 'nip', 'password', 'confirmPassword'])
-          if (checkForErrors()) return
-          const newGuru = await addGuru()
-          return newGuru
+
+          if (errors) {
+                    // ❗️Throw validation error to controller
+                    throw {
+                              status: 400,
+                              form,
+                    }
+          }
+
+          const hashedPassword = await bcrypt.hash(form.password.content, 10)
+          await dbRun(
+                    'INSERT INTO guru (id, nama, nip, password, role) VALUES (?, ?, ?, ?, ?)',
+                    [uuidv4(), form.nama.content, form.nip.content, hashedPassword, 'guru']
+          )
+
+          return { message: 'Guru berhasil ditambah' }
 }
 
 exports.edit = async (guruData) => {
-          const { id, nama, password, nip } = guruData
-          const hashedPassword = await bcrypt.hash(password, 10)
+          const { id, nama, nip } = guruData
           const filters = [
                     {
                               name: 'nip',
@@ -181,8 +132,8 @@ exports.edit = async (guruData) => {
           }
 
           const updatedGuru = await dbRun(
-                    'UPDATE guru SET nama = ?, password = ?, nip = ? WHERE id = ?',
-                    [nama, hashedPassword, nip, id]
+                    'UPDATE guru SET nama = ?, nip = ? WHERE id = ?',
+                    [nama, nip, id]
           )
           return updatedGuru
 }

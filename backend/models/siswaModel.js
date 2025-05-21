@@ -84,47 +84,47 @@ exports.edit = async (siswaData) => {
           const {
                     id,
                     nama,
-                    password,
                     nis,
                     kelas,
                     absen,
                     subdivisi_jurusan,
                     id_jurusan,
           } = siswaData
-          const hashedPassword = await bcrypt.hash(password, 10)
+
           const filters = [
                     {
                               name: 'nis',
-                              code: await dbGet(
-                                        'SELECT * FROM siswa WHERE nip = ?',
-                                        [nis]
-                              ),
+                              code: await dbGet('SELECT * FROM siswa WHERE nis = ?', [nis]),
                               message: 'NIS sudah dipakai, silahkan masukkan NIS lain.',
                     },
                     {
                               name: 'nama',
-                              code: await dbGet(
-                                        'SELECT * FROM siswa WHERE nama = ?',
-                                        [nama]
-                              ),
-                              message: 'Username sudah dipakai, selahkan gunakan username lain.',
+                              code: await dbGet('SELECT * FROM siswa WHERE nama = ?', [nama]),
+                              message: 'Username sudah dipakai, silahkan gunakan username lain.',
                     },
                     {
-                              nama: 'exists',
-                              code: !(await dbGet(
-                                        'SELECT * FROM siswa WHERE id = ?',
-                                        [id]
-                              )),
+                              name: 'exists',
+                              code: await dbGet('SELECT * FROM siswa WHERE id = ?', [id]),
                               message: 'Siswa tidak ditemukan!',
                     },
           ]
+
           const errors = {
                     count: 0,
                     messages: {},
           }
 
           filters.forEach((filter) => {
-                    if (filter.code && filter.code.id !== id) {
+                    if (
+                              filter.name === 'exists' && !filter.code
+                    ) {
+                              errors.count++
+                              errors.messages[filter.name] = filter.message
+                    } else if (
+                              filter.code &&
+                              filter.code.id &&
+                              filter.code.id !== id
+                    ) {
                               errors.count++
                               errors.messages[filter.name] = filter.message
                     }
@@ -135,19 +135,11 @@ exports.edit = async (siswaData) => {
           }
 
           const updatedSiswa = await dbRun(
-                    'UPDATE siswa SET nama = ?, password = ?, nis = ?, kelas = ?, absen = ?, subdivisi_jurusan = ?, id_jurusan = ? WHERE id = ?',
-                    [
-                              nama,
-                              hashedPassword,
-                              nis,
-                              kelas,
-                              absen,
-                              subdivisi_jurusan,
-                              id_jurusan,
-                              id,
-                    ]
+                    'UPDATE siswa SET nama = ?, nis = ?, kelas = ?, absen = ?, subdivisi_jurusan = ?, id_jurusan = ? WHERE id = ?',
+                    [nama, nis, kelas, absen, subdivisi_jurusan, id_jurusan, id]
           )
-          return updated
+
+          return updatedSiswa
 }
 
 exports.delete = async (siswaID) => {

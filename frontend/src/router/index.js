@@ -6,6 +6,9 @@ import SplashscreenView from '@/views/SplashscreenView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import SignupView from '@/views/SignupView.vue'
 import GuruSignUpView from '@/views/GuruSignUpView.vue'
+import SiswaView from '@/views/SiswaView.vue'
+import GuruView from '@/views/GuruView.vue'
+import JurusanView from '@/views/JurusanView.vue'
 
 // Router untuk redireksi
 const router = createRouter({
@@ -33,6 +36,30 @@ const router = createRouter({
                               meta: { requiresAuth: true }, // 🔹 Added authentication requirement
                     },
                     {
+                              path: '/dashboard/absensi',
+                              name: 'dashboard-absensi',
+                              component: DashboardView,
+                              meta: { requiresAuth: true }, // 🔹 Added authentication requirement
+                    },
+                    {
+                              path: '/dashboard/siswa',
+                              name: 'dashboard-siswa',
+                              component: SiswaView,
+                              meta: { requiresAuth: true }, // 🔹 Added authentication requirement
+                    },
+                    {
+                              path: '/dashboard/guru',
+                              name: 'dashboard-guru',
+                              component: GuruView,
+                              meta: { requiresAuth: true }, // 🔹 Added authentication requirement
+                    },
+                    {
+                              path: '/dashboard/jurusan',
+                              name: 'dashboard-jurusan',
+                              component: JurusanView,
+                              meta: { requiresAuth: true }, // 🔹 Added authentication requirement
+                    },
+                    {
                               path: '/splash',
                               name: 'splashscreen',
                               component: SplashscreenView,
@@ -49,7 +76,7 @@ const router = createRouter({
 // Constant untuk redireksi sesuai role
 
 const redirectByRole = {
-          guru: '/dashboard',
+          guru: '/dashboard/absensi',
           siswa: '/splash',
 }
 
@@ -80,9 +107,9 @@ router.beforeEach(async (to, from, next) => {
                               to.name === 'splashscreen' &&
                               user.role === 'guru'
                     ) {
-                              next('/dashboard')
+                              next('/dashboard/absensi')
                     } else if (
-                              to.name === 'dashboard' &&
+                              to.path.startsWith('dashboard') &&
                               user.role === 'siswa'
                     ) {
                               next('/splash')

@@ -7,14 +7,16 @@ exports.findAll = async () => {
 exports.create = async (formData) => {
           const { nama } = formData
 
-          if (dbGet('SELECT * FROM jurusan WHERE nama = ?', [nama])) {
+          const existing = await dbGet('SELECT * FROM jurusan WHERE nama = ?', [nama]);
+          if (existing) {
                     throw {
                               status: 400,
                               errors: {
                                         nama: 'Nama jurusan sudah digunakan, silahkan gunakan nama lain!',
                               },
-                    }
+                    };
           }
+
 
           return await dbRun('INSERT INTO jurusan (nama) VALUES (?)', [nama])
 }
@@ -55,10 +57,7 @@ exports.edit = async (formData) => {
                     throw { status: 400, errors: errors.messages }
           }
 
-          const editedJurusan = await dbRun(
-                    'UPDATE siswa SET nama = ? WHERE id = ?',
-                    [nama]
-          )
+          const editedJurusan = await dbRun('UPDATE jurusan SET nama = ? WHERE id = ?', [nama, id])
           return editedJurusan
 }
 

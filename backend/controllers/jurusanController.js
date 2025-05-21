@@ -58,7 +58,7 @@ exports.editJurusan = async (req, res) => {
 
 exports.deleteJurusan = async (req, res) => {
           try {
-                    const id = req.body
+                    const id = req.body.id
                     const deletedJurusan = await jurusanModel.delete(id)
                     res.json({
                               message: 'Jurusan deleted successfully',
